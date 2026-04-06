@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bộ sưu tập nông sản | Green Market</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="bg-background-light text-slate-900 font-display">
+    <div class="relative flex min-h-screen flex-col overflow-x-hidden">
+      <header class="sticky top-0 z-50 border-b border-forest/5 bg-background-light/90 px-6 py-4 backdrop-blur-md md:px-20">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-6">
+          <div class="flex items-center gap-10">
+            <a class="flex items-center gap-2 text-primary" href="../page/index.html">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </a>
+            <nav class="hidden items-center gap-8 lg:flex">
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/sanpham.html">Sản phẩm</a>
+              <a class="text-sm font-bold text-primary" href="../page/bosuutap.html">Bộ sưu tập</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="#footer-contact">Liên hệ</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div class="hidden items-center rounded-full border border-forest/5 bg-earth-beige/40 px-4 py-1.5 md:flex">
+              <span class="material-symbols-outlined text-xl text-forest/40">search</span>
+              <input class="w-48 border-none bg-transparent text-sm placeholder:text-forest/40 focus:ring-0" placeholder="Tìm kiếm nông sản..." type="text" />
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="relative rounded-full p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="absolute right-1 top-1 rounded-full border-2 border-background-light bg-primary px-1.5 text-[10px] font-bold text-white">0</span>
+              </button>
+              <button class="rounded-full p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">person</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-[1440px] px-6 py-8 lg:px-20 lg:py-10">
+        <section class="relative overflow-hidden rounded-[36px] bg-slate-200">
+          <img id="collection-hero-image" src="../img/rancu.png" alt="Bộ sưu tập nông sản" class="h-[420px] w-full object-cover md:h-[460px]" />
+          <div class="absolute inset-0 bg-gradient-to-r from-background-dark/90 via-background-dark/55 to-transparent"></div>
+          <div class="absolute inset-x-0 bottom-0 top-0 flex items-center px-8 py-10 md:px-12 lg:px-14">
+            <div class="max-w-3xl">
+              <div class="inline-flex items-center rounded-full bg-primary px-4 py-1 text-xs font-black uppercase tracking-[0.3em] text-white">Khám phá ngay</div>
+              <h1 class="mt-5 text-4xl font-black leading-tight text-white md:text-6xl">
+                Tất cả bộ sưu tập
+                <span class="block text-primary">tinh hoa nông sản</span>
+              </h1>
+              <p class="mt-5 max-w-2xl text-base leading-8 text-slate-200 md:text-lg">
+                Không đổi layout cũ, chỉ làm bộ sưu tập “bán được”: rõ đối tượng mua, nhịp giao, combo đề xuất và sản phẩm nên hiển thị đầu tiên.
+              </p>
+              <div class="mt-8 grid gap-4 sm:grid-cols-3">
+                <article class="rounded-[24px] bg-white/10 px-5 py-4 backdrop-blur">
+                  <p class="text-[11px] font-black uppercase tracking-[0.24em] text-white/60">Bộ sưu tập</p>
+                  <p class="mt-2 text-3xl font-black text-white" id="collection-count">0</p>
+                </article>
+                <article class="rounded-[24px] bg-white/10 px-5 py-4 backdrop-blur">
+                  <p class="text-[11px] font-black uppercase tracking-[0.24em] text-white/60">Sản phẩm mapped</p>
+                  <p class="mt-2 text-3xl font-black text-white" id="collection-product-count">0</p>
+                </article>
+                <article class="rounded-[24px] bg-white/10 px-5 py-4 backdrop-blur">
+                  <p class="text-[11px] font-black uppercase tracking-[0.24em] text-white/60">Mức giá từ</p>
+                  <p class="mt-2 text-3xl font-black text-white" id="collection-low-price">0đ</p>
+                </article>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <nav class="mt-10 flex items-center gap-2 text-sm text-slate-500">
+          <a class="transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="font-semibold text-forest">Bộ sưu tập</span>
+        </nav>
+
+        <section class="mt-8 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Phân lớp theo nhu cầu mua</p>
+              <h2 class="mt-3 text-3xl font-black text-forest">Bộ sưu tập không chỉ đẹp, mà còn phải có nghiệp vụ chốt đơn</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500" id="segment-caption">
+                Toàn bộ bộ sưu tập đang hoạt động.
+              </p>
+            </div>
+            <a href="../page/sanpham.html" class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20">
+              Xem toàn bộ sản phẩm
+            </a>
+          </div>
+          <div id="collection-segments" class="mt-6 flex flex-wrap gap-3"></div>
+          <div id="collection-filters" class="mt-5 flex flex-wrap gap-3"></div>
+        </section>
+
+        <section class="mt-8 gm-collection-shell">
+          <div id="collection-grid" class="masonry-grid"></div>
+        </section>
+
+        <section class="mt-10 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Mô hình triển khai</p>
+              <h2 class="mt-3 text-3xl font-black text-forest" id="collection-showcase-title">Một bộ sưu tập nên vận hành như thế nào?</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500" id="collection-showcase-subtitle">
+                Bundle, dịch vụ giao và nhịp mua lại sẽ hiển thị ở đây.
+              </p>
+            </div>
+            <div id="collection-showcase-meta" class="flex flex-wrap gap-3"></div>
+          </div>
+
+          <div class="mt-8" id="collection-showcase-guide"></div>
+
+          <div class="gm-divider-soft mt-8"></div>
+
+          <div class="mt-8">
+            <div class="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+              <div>
+                <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Sản phẩm nổi bật</p>
+                <h3 class="mt-2 text-2xl font-black text-forest">SKU nên đẩy ở đầu collection</h3>
+              </div>
+              <p class="max-w-2xl text-sm leading-7 text-slate-500">
+                Dùng danh sách này để cắm vào hero phụ, live card, chat AI gợi ý hoặc khối “mua cùng” mà không phá cấu trúc hiện tại.
+              </p>
+            </div>
+            <div id="collection-showcase-products" class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
+          </div>
+        </section>
+      </main>
+
+      <footer id="footer-contact" class="border-t border-forest/5 bg-white px-6 py-10 md:px-20">
+        <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.3fr_1fr_1fr]">
+          <div>
+            <div class="flex items-center gap-2 text-primary">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </div>
+            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-500">
+              Layer lại nghiệp vụ bộ sưu tập theo hướng marketplace/content commerce nhưng vẫn giữ bố cục, nhịp thẻ và chất “nông sản sạch” vốn có của dự án.
+            </p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Liên hệ</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">support@agrifresh.local</p>
+            <p class="text-sm leading-7 text-slate-500">0988 000 111</p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Điểm nhấn triển khai</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">Segment theo nhu cầu • Combo/AOV • Gợi ý mua lại • Dịch vụ giao hàng • Chat AI ngữ cảnh</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#17cf26',
+              accent: '#A3B18A',
+              forest: '#1B3022',
+              'earth-beige': '#E9E3D3',
+              'background-light': '#FDFCF8',
+              'background-dark': '#112112',
+            },
+            fontFamily: {
+              display: ['Plus Jakarta Sans', 'Manrope', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+          },
+        },
+      };
+    </script>
+    <script src="../js/common.js"></script>
+    <script src="../js/collections-data.js"></script>
+    <script src="../js/bosuutap.js"></script>
+  </body>
+</html>

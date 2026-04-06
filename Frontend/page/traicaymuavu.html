@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Bộ sưu tập nông sản | Green Market</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="bg-background-light text-slate-900 font-display" data-collection-slug="trai-cay-mua-vu">
+    <div class="relative flex min-h-screen flex-col overflow-x-hidden">
+      <header class="sticky top-0 z-50 border-b border-forest/5 bg-background-light/90 px-6 py-4 backdrop-blur-md md:px-20">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-6">
+          <div class="flex items-center gap-10">
+            <a class="flex items-center gap-2 text-primary" href="../page/index.html">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </a>
+            <nav class="hidden items-center gap-8 lg:flex">
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/sanpham.html">Sản phẩm</a>
+              <a class="text-sm font-bold text-primary" href="../page/bosuutap.html">Bộ sưu tập</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="#footer-contact">Liên hệ</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div class="hidden items-center rounded-full border border-forest/5 bg-earth-beige/40 px-4 py-1.5 md:flex">
+              <span class="material-symbols-outlined text-xl text-forest/40">search</span>
+              <input class="w-48 border-none bg-transparent text-sm placeholder:text-forest/40 focus:ring-0" placeholder="Tìm kiếm nông sản..." type="text" />
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="../page/giohang.html" class="relative rounded-full p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="absolute right-1 top-1 rounded-full border-2 border-background-light bg-primary px-1.5 text-[10px] font-bold text-white">0</span>
+              </a>
+              <a href="../page/taikhoan.html" class="rounded-full p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">person</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-[1440px] px-6 py-8 lg:px-20 lg:py-10">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+          <a class="transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <a class="transition-colors hover:text-primary" href="../page/bosuutap.html">Bộ sưu tập</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="font-semibold text-forest" id="collection-breadcrumb-current">Bộ sưu tập</span>
+        </nav>
+
+        <section class="mt-8 gm-section-surface overflow-hidden p-6 md:p-8 xl:p-10">
+          <div class="grid gap-8 xl:grid-cols-[1.15fr_0.85fr] xl:items-center">
+            <div>
+              <span id="detail-campaign-label" class="inline-flex rounded-full bg-primary/10 px-4 py-1.5 text-[11px] font-black uppercase tracking-[0.28em] text-primary">Bộ sưu tập</span>
+              <h1 class="mt-5 text-4xl font-black leading-tight text-forest md:text-5xl">
+                <span id="detail-title">Bộ sưu tập nông sản</span>
+                <span class="block text-primary" id="detail-accent">được tối ưu cho bán hàng</span>
+              </h1>
+              <p class="mt-5 max-w-3xl text-base leading-8 text-slate-500" id="detail-description">
+                Mô tả collection.
+              </p>
+
+              <div class="mt-6 flex flex-wrap gap-3" id="detail-service-tags"></div>
+              <div class="mt-3 flex flex-wrap gap-3" id="detail-audience-tags"></div>
+
+              <div class="mt-8 flex flex-wrap gap-4">
+                <a id="detail-order-link" href="../page/sanpham.html" class="inline-flex items-center justify-center rounded-full bg-primary px-6 py-3 text-sm font-bold text-white transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/20">
+                  Mua theo bộ sưu tập
+                </a>
+                <a href="../page/bosuutap.html" class="inline-flex items-center justify-center rounded-full border border-forest/10 bg-white px-6 py-3 text-sm font-bold text-forest transition-colors hover:border-primary/20 hover:text-primary">
+                  Quay lại danh mục bộ sưu tập
+                </a>
+              </div>
+
+              <div class="mt-8 rounded-[28px] border border-primary/10 bg-background-light px-5 py-5" id="detail-shop-targets"></div>
+            </div>
+
+            <div class="relative overflow-hidden rounded-[32px] bg-slate-100 shadow-[0_26px_52px_rgba(15,23,42,0.12)]">
+              <div class="absolute inset-0 bg-gradient-to-tr from-background-dark/10 to-transparent"></div>
+              <img id="detail-hero-image" src="../img/banner.png" alt="Bộ sưu tập" class="h-[320px] w-full object-cover md:h-[420px] xl:h-[520px]" />
+            </div>
+          </div>
+
+          <div class="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4" id="detail-stats"></div>
+        </section>
+
+        <section class="mt-8 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Hướng dẫn vận hành</p>
+              <h2 class="mt-3 text-3xl font-black text-forest">Bộ sưu tập này nên chốt đơn như thế nào?</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500">
+                Chỉ thêm chiều sâu nghiệp vụ vào phần hiện có: đối tượng, combo, nhịp giao, tái mua và cách kích hoạt chat AI.
+              </p>
+            </div>
+          </div>
+          <div class="mt-8" id="detail-purchase-guide"></div>
+        </section>
+
+        <section class="mt-8 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Dịch vụ đi kèm</p>
+              <h2 class="mt-3 text-3xl font-black text-forest">Cam kết fulfillment và chăm sóc sau bán</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500">
+                Dùng khối này để hiển thị những tín hiệu giúp khách tin tưởng: giao hàng, xử lý bảo quản, theo dõi đơn và nhắc mua lại.
+              </p>
+            </div>
+          </div>
+          <div class="mt-8" id="detail-commitments"></div>
+        </section>
+
+        <section class="mt-8 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">SKU nên đẩy</p>
+              <h2 class="mt-3 text-3xl font-black text-forest">Sản phẩm nổi bật để gắn vào collection</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500">
+                Card sản phẩm dùng chung phong cách hiện tại, chỉ enrich thêm social proof, nút chat và luồng mua nhanh.
+              </p>
+            </div>
+            <div class="flex flex-wrap gap-3" id="detail-featured-meta"></div>
+          </div>
+          <div class="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-3" id="detail-featured-products"></div>
+        </section>
+
+        <section class="mt-8 gm-section-surface p-6 md:p-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div class="max-w-3xl">
+              <p class="text-[11px] font-black uppercase tracking-[0.28em] text-primary/70">Mở rộng đơn hàng</p>
+              <h2 class="mt-3 text-3xl font-black text-forest">Bộ sưu tập liên quan để cross-sell</h2>
+              <p class="mt-4 text-base leading-8 text-slate-500">
+                Gợi ý thêm collection phù hợp để tăng số món trong giỏ mà không làm loãng cấu trúc giao diện.
+              </p>
+            </div>
+          </div>
+          <div class="mt-8 grid gap-5 xl:grid-cols-2" id="detail-related-collections"></div>
+        </section>
+      </main>
+
+      <footer id="footer-contact" class="border-t border-forest/5 bg-white px-6 py-10 md:px-20">
+        <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.3fr_1fr_1fr]">
+          <div>
+            <div class="flex items-center gap-2 text-primary">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </div>
+            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-500">
+              Tăng chiều sâu nghiệp vụ cho bộ sưu tập theo hướng marketplace/content commerce nhưng vẫn giữ layout mềm, sạch và thiên về nông sản của dự án.
+            </p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Liên hệ</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">support@agrifresh.local</p>
+            <p class="text-sm leading-7 text-slate-500">0988 000 111</p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Điểm nhấn triển khai</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">Phân tầng theo nhu cầu • Combo/AOV • Giao hàng • Nhắc mua lại • Chat AI ngữ cảnh</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#17cf26',
+              accent: '#A3B18A',
+              forest: '#1B3022',
+              'earth-beige': '#E9E3D3',
+              'background-light': '#FDFCF8',
+              'background-dark': '#112112',
+            },
+            fontFamily: {
+              display: ['Plus Jakarta Sans', 'Manrope', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+          },
+        },
+      };
+    </script>
+    <script src="../js/common.js"></script>
+    <script src="../js/collections-data.js"></script>
+    <script src="../js/collection-detail.js"></script>
+  </body>
+</html>

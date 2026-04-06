@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Vận chuyển | AgriFresh</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="bg-background-light text-slate-900 font-display">
+    <div class="relative flex min-h-screen flex-col overflow-x-hidden">
+      <header class="sticky top-0 z-50 border-b border-forest/5 bg-background-light/90 px-6 py-4 backdrop-blur-md md:px-20">
+        <div class="mx-auto flex max-w-7xl items-center justify-between gap-6">
+          <div class="flex items-center gap-10">
+            <a class="flex items-center gap-2 text-primary" href="../page/index.html">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </a>
+            <nav class="hidden items-center gap-8 lg:flex">
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/sanpham.html">Sản phẩm</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="../page/bosuutap.html">Bộ sưu tập</a>
+              <a class="text-sm font-bold text-forest/80 transition-colors hover:text-primary" href="#footer-contact">Liên hệ</a>
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div class="hidden items-center rounded-full border border-forest/5 bg-earth-beige/40 px-4 py-1.5 md:flex">
+              <span class="material-symbols-outlined text-xl text-forest/40">search</span>
+              <input class="w-48 border-none bg-transparent text-sm placeholder:text-forest/40 focus:ring-0" placeholder="Tìm kiếm nông sản..." type="text" />
+            </div>
+            <div class="flex items-center gap-2">
+              <a href="../page/giohang.html" class="relative rounded-full p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span class="absolute right-1 top-1 rounded-full border-2 border-background-light bg-primary px-1.5 text-[10px] font-bold text-white">0</span>
+              </a>
+              <a href="../page/taikhoan.html" class="rounded-full bg-earth-beige/70 p-2 text-forest transition-colors hover:bg-earth-beige">
+                <span class="material-symbols-outlined">person</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main class="mx-auto w-full max-w-7xl px-6 py-8 lg:px-20 lg:py-10">
+        <nav class="flex items-center gap-2 text-sm text-slate-500">
+          <a class="transition-colors hover:text-primary" href="../page/index.html">Trang chủ</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <a class="transition-colors hover:text-primary" href="../page/taikhoan.html">Tài khoản</a>
+          <span class="material-symbols-outlined text-xs">chevron_right</span>
+          <span class="font-semibold text-forest">Vận chuyển</span>
+        </nav>
+
+        <section class="gm-account-hero mt-6">
+          <div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+            <div>
+              <p id="account-page-kicker" class="text-sm font-black uppercase tracking-[0.28em] text-white/70">Tài khoản</p>
+              <h1 id="account-page-title" class="mt-4 text-4xl font-black leading-tight text-white md:text-5xl">Không gian làm việc cho giao hàng</h1>
+              <p id="account-page-description" class="mt-4 max-w-3xl text-base leading-8 text-white/80 md:text-lg">Phần vận chuyển được tách khỏi tài khoản tổng hợp để shipper và admin dễ nhìn luồng nhận giao, đơn đang phụ trách và các case giao lỗi.</p>
+            </div>
+            <div id="account-hero-meta" class="gm-account-hero-meta"></div>
+          </div>
+        </section>
+
+        <section class="gm-account-layout mt-8">
+          <aside id="account-sidebar" class="gm-account-sidebar"></aside>
+          <div id="account-page-content" class="gm-account-stack">
+            <section class="gm-account-surface p-6 md:p-8">
+              <div class="gm-account-section-heading">
+                <div>
+                  <p class="text-sm font-black uppercase tracking-[0.24em] text-primary">Shipping ops</p>
+                  <h2 class="mt-3 text-3xl font-black text-forest">Tổng quan vận chuyển</h2>
+                </div>
+              </div>
+              <div id="shipper-summary" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4"></div>
+            </section>
+            <section class="gm-account-surface p-6 md:p-8">
+              <div class="gm-account-section-heading">
+                <div>
+                  <p class="text-sm font-black uppercase tracking-[0.24em] text-primary">Queue nhận giao</p>
+                  <h2 class="mt-3 text-3xl font-black text-forest">Đơn sẵn sàng giao</h2>
+                </div>
+              </div>
+              <div id="shipper-available-orders" class="gm-account-stack"></div>
+            </section>
+            <section class="gm-account-surface p-6 md:p-8">
+              <div class="gm-account-section-heading">
+                <div>
+                  <p class="text-sm font-black uppercase tracking-[0.24em] text-primary">Tuyến giao đang phụ trách</p>
+                  <h2 class="mt-3 text-3xl font-black text-forest">Đơn đã nhận và cần cập nhật</h2>
+                </div>
+              </div>
+              <div id="shipper-assigned-orders" class="gm-account-stack"></div>
+            </section>
+          </div>
+        </section>
+      </main>
+
+      <footer id="footer-contact" class="border-t border-forest/5 bg-white px-6 py-10 md:px-20">
+        <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.3fr_1fr_1fr]">
+          <div>
+            <div class="flex items-center gap-2 text-primary">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <span class="text-xl font-extrabold uppercase tracking-tight">Green Market</span>
+            </div>
+            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-500">
+              Khu vực tài khoản được làm gọn lại theo hướng ít chữ, điều hướng rõ và vẫn giữ nhịp màu sắc, card bo tròn và cảm giác cao cấp của AgriFresh.
+            </p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Liên hệ</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">support@agrifresh.local</p>
+            <p class="text-sm leading-7 text-slate-500">0988 000 111</p>
+          </div>
+          <div>
+            <p class="text-sm font-black uppercase tracking-[0.22em] text-forest">Điểm nhấn</p>
+            <p class="mt-4 text-sm leading-7 text-slate-500">Account hub • Order tracking • Seller ops • Shipping flow • Admin controls</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              primary: '#17cf26',
+              accent: '#A3B18A',
+              forest: '#1B3022',
+              'earth-beige': '#E9E3D3',
+              'background-light': '#FDFCF8',
+              'background-dark': '#112112',
+            },
+            fontFamily: {
+              display: ['Plus Jakarta Sans', 'Manrope', 'sans-serif'],
+            },
+            borderRadius: {
+              DEFAULT: '0.25rem',
+              lg: '0.5rem',
+              xl: '0.75rem',
+              full: '9999px',
+            },
+          },
+        },
+      };
+    </script>
+    <script src="../js/common.js"></script>
+    <script src="../js/account-common.js"></script>
+    <script src="../js/taikhoan-shipper.js"></script>
+  </body>
+</html>

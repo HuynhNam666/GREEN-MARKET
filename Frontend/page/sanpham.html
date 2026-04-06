@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Danh Mục Sản Phẩm &amp; Bộ Lọc | Green Market</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display"
+  >
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+      <!-- ===== HEADER ===== -->
+      <header
+        class="sticky top-0 z-50 w-full border-b border-forest/5 bg-background-light/90 backdrop-blur-md px-6 md:px-20 py-4 transition-all"
+      >
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <div class="flex items-center gap-12">
+            <div class="flex items-center gap-2 text-primary">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <h2
+                class="text-xl font-extrabold tracking-tight font-display uppercase"
+              >
+                Green Market
+              </h2>
+            </div>
+            <nav class="hidden lg:flex items-center gap-8">
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/index.html"
+                >Trang chủ</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/sanpham.html"
+                >Sản phẩm</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/bosuutap.html"
+                >Bộ sưu tập</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="#"
+                >Liên hệ</a
+              >
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div
+              class="hidden md:flex items-center bg-earth-beige/40 rounded-full px-4 py-1.5 border border-forest/5"
+            >
+              <span class="material-symbols-outlined text-forest/40 text-xl"
+                >search</span
+              >
+              <input
+                class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder:text-forest/40"
+                placeholder="Tìm kiếm nông sản..."
+                type="text"
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                class="p-2 hover:bg-earth-beige rounded-full transition-colors text-forest relative"
+              >
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span
+                  class="absolute top-1 right-1 bg-primary text-white text-[10px] font-bold px-1.5 rounded-full border-2 border-background-light"
+                  >0</span
+                >
+              </button>
+              <button
+                class="p-2 hover:bg-earth-beige rounded-full transition-colors text-forest"
+              >
+                <span class="material-symbols-outlined">person</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- ===== HEADER ===== -->
+      <main class="max-w-[1440px] mx-auto w-full px-6 lg:px-20 py-8">
+        <!-- ===== PAGE HEADER / BREADCRUMB ===== -->
+        <div class="mb-8">
+          <nav class="flex items-center gap-2 text-sm text-slate-500 mb-4">
+            <a class="hover:text-primary" href="../page/index.html">Trang chủ</a>
+            <span class="material-symbols-outlined text-xs">chevron_right</span>
+            <span class="text-slate-900 dark:text-slate-100 font-medium"
+              >Sản phẩm nông nghiệp</span
+            >
+          </nav>
+          <div
+            class="flex flex-col md:flex-row md:items-end justify-between gap-4"
+          >
+            <div>
+              <h1 class="text-4xl font-black tracking-tight mb-2">
+                Nông Sản Cao Cấp
+              </h1>
+              <p class="text-slate-500 max-w-xl">
+                Nguồn gốc trực tiếp từ các trang trại hữu cơ được chứng nhận,
+                cam kết nông nghiệp bền vững và tái tạo.
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              
+              <div class="relative">
+
+                <button id="sortBtn"
+                class="flex items-center gap-2 bg-white dark:bg-slate-800 px-4 py-2 border border-slate-200 dark:border-slate-700 rounded-lg font-semibold text-sm">
+                
+                <span class="material-symbols-outlined text-lg">sort</span>
+                
+                <span id="sortText">Sắp xếp: Mới nhất</span>
+                
+                <span class="material-symbols-outlined text-lg">expand_more</span>
+                
+                </button>
+                
+                
+                <div id="sortMenu"
+                class="absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-lg hidden z-20">
+                
+                <button class="sort-option block w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700" data-sort="new">
+                Mới nhất
+                </button>
+                
+                <button class="sort-option block w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700" data-sort="price-asc">
+                Giá thấp đến cao
+                </button>
+                
+                <button class="sort-option block w-full text-left px-4 py-2 text-sm hover:bg-slate-50 dark:hover:bg-slate-700" data-sort="price-desc">
+                Giá cao đến thấp
+                </button>
+                
+                </div>
+                
+                </div>
+            </div>
+          </div>
+        </div>
+        <!-- ===== END PAGE HEADER ===== -->
+        <div class="flex flex-col lg:flex-row gap-12">
+          <!-- ===== SIDEBAR BỘ LỌC SẢN PHẨM ===== -->
+          <aside class="w-full lg:w-64 flex-shrink-0">
+            <div class="sticky top-28 space-y-8">
+              <div>
+                <h3
+                  class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4"
+                >
+                  Loại sản phẩm
+                </h3>
+                <div class="flex flex-wrap gap-3 mb-10 justify-center">
+
+                  <button class="filter-btn px-5 py-2 bg-green-600 text-white rounded-lg" data-filter="all">
+                  Tất cả
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="rau">
+                  Rau củ
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="trai">
+                  Trái cây
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="hat">
+                  Hạt
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="suatrung">
+                  Sữa & Trứng
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="chebien">
+                  Thực phẩm chế biến
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="dacsan">
+                  Đặc sản
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="matong">
+                  Mật ong
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="combo">
+                  Combo
+                  </button>
+                  
+                  <button class="filter-btn px-5 py-2 bg-gray-200 rounded-lg" data-filter="qua">
+                  Qùa tặng
+                  </button>
+                  
+                  </div>
+              </div>
+              <div>
+                <h3 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4">
+                  Khoảng giá
+                </h3>
+              
+                <div class="px-2">
+              
+                  <input 
+                    type="range"
+                    min="0"
+                    max="150000"
+                    value="150000"
+                    id="priceRange"
+                    class="w-full accent-green-600 cursor-pointer"
+                  />
+              
+                  <div class="flex justify-between mt-3 text-xs font-bold">
+                    <span>0đ</span>
+                    <span id="priceValue">1.500.000đ</span>
+                  </div>
+              
+                </div>
+              </div>
+             
+              <button
+id="resetFilter"
+class="w-full py-3 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg text-sm font-bold transition-colors">
+Xóa tất cả bộ lọc
+</button>
+            </div>
+          </aside>
+          <!-- ===== KẾT THÚC SIDEBAR BỘ LỌC ===== -->
+           <!-- ===== DANH SÁCH SẢN PHẨM ===== -->
+          <div class="flex-1">
+            <!-- ===== LƯỚI HIỂN THỊ SẢN PHẨM ===== -->
+            <div class="product-grid grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
+              
+            </div>
+            <div class="mt-16 flex items-center justify-center gap-2">
+              <button
+                class="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <span class="material-symbols-outlined text-lg leading-none"
+                  >chevron_left</span
+                >
+              </button>
+              <button
+                class="h-10 w-10 flex items-center justify-center rounded-lg text-white bg-primary text-slate-900 font-bold"
+              >
+                1
+              </button>
+              <button
+                class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 font-bold"
+              >
+                2
+              </button>
+              <button
+                class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 font-bold"
+              >
+                3
+              </button>
+              <span class="px-2 text-slate-400 font-bold">...</span>
+              <button
+                class="h-10 w-10 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 font-bold"
+              >
+                12
+              </button>
+              <button
+                class="p-2 border border-slate-200 dark:border-slate-700 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <span class="material-symbols-outlined text-lg leading-none"
+                  >chevron_right</span
+                >
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </main>
+    <!-- ===== FOOTER ===== -->
+    <footer class="bg-earth-beige/30 border-t border-forest/10 pt-20 pb-10">
+      <div class="max-w-7xl mx-auto px-6">
+        <div
+          class="bg-forest rounded-[2rem] p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between mb-24 reveal"
+        >
+          <div class="mb-10 lg:mb-0 max-w-lg">
+            <h3 class="text-3xl md:text-4xl font-serif text-white mb-4">
+              Đăng ký nhận tin từ vườn
+            </h3>
+            <p class="text-white/60">
+              Nhận thông tin về các ưu đãi độc quyền, công thức nấu ăn theo
+              mùa và tin tức mới nhất từ nông trại.
+            </p>
+          </div>
+          <form class="flex w-full lg:w-auto gap-4">
+            <input
+              class="bg-white/10 border-white/20 text-white rounded-xl px-6 py-5 focus:ring-accent focus:border-accent w-full md:w-96 placeholder:text-white/40"
+              placeholder="Địa chỉ email của bạn"
+              type="email"
+            />
+            <button
+              class="bg-accent text-forest font-bold px-10 py-5 rounded-xl hover:bg-white transition-all whitespace-nowrap"
+            >
+              Đăng ký
+            </button>
+          </form>
+        </div>
+        <div
+          class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-24"
+        >
+          <div class="col-span-2">
+            <div class="flex items-center gap-2 text-primary mb-8">
+              <span class="material-symbols-outlined text-4xl">eco</span>
+              <h2 class="text-2xl font-extrabold tracking-tight font-display">
+                Green Market
+              </h2>
+            </div>
+            <p class="text-forest/70 max-w-sm mb-8 leading-relaxed">
+              Đưa nông sản sạch từ tâm huyết của người nông dân đến gian bếp
+              của mỗi gia đình Việt. Bền vững, tử tế và an lành.
+            </p>
+            <div class="flex gap-5">
+              <a
+                class="w-11 h-11 rounded-full border border-forest/10 flex items-center justify-center text-forest hover:bg-primary hover:text-white transition-all"
+                href="#"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"
+                  ></path>
+                </svg>
+              </a>
+              <a
+                class="w-11 h-11 rounded-full border border-forest/10 flex items-center justify-center text-forest hover:bg-primary hover:text-white transition-all"
+                href="#"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                  ></path>
+                </svg>
+              </a>
+            </div>
+          </div>
+          <div>
+            <h4
+              class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+            >
+              Sản phẩm
+            </h4>
+            <ul class="space-y-4 text-forest/70 text-sm">
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Rau củ sạch</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Trái cây nội địa</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Sữa &amp; Trứng hữu cơ</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Thịt &amp; Gia cầm</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4
+              class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+            >
+              Về chúng tôi
+            </h4>
+            <ul class="space-y-4 text-forest/70 text-sm">
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Câu chuyện</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Phát triển bền vững</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Đối tác nông trại</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Tuyển dụng</a
+                >
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4
+              class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+            >
+              Hỗ trợ
+            </h4>
+            <ul class="space-y-4 text-forest/70 text-sm">
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Giao hàng</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Chính sách đổi trả</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Câu hỏi thường gặp</a
+                >
+              </li>
+              <li>
+                <a class="hover:text-primary transition-colors" href="#"
+                  >Liên hệ</a
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div
+          class="border-t border-forest/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6"
+        >
+          <p class="text-forest/50 text-xs">
+            © 2024 Green Market E-commerce. Tất cả các quyền được bảo hộ.
+          </p>
+          <div class="flex items-center gap-8">
+            <img
+              class="opacity-40 grayscale hover:grayscale-0 transition-all cursor-pointer h-6"
+              data-alt="Phương thức thanh toán"
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDgx7hVCWRbJa0NvduAlDSXcthIbKlb8_IdzCqdDg8pDI7Prd7QdVYS8dBHYL3Z6Yaxgj0kGFwAi7RQUEB4J5g4DO3d3GqqiOd4ImgBZSop2UrALwsYgc7hXSMCPDubcW8hhGhN_WFv3v3fsRP5l-sZVirh1p_RatEvC63bz17Gyi0ti3U5WhIKuVPIbdnKcAWt0sF0ofJoPF0kwhCz_oMH-yo0Lx6Q_kxYc89c40-64dUQKWEfZazwER7lqx662EkVrsptNRvx58"
+            />
+            <div class="flex gap-6 text-forest/50 text-xs font-medium">
+              <a
+                class="hover:text-forest transition-colors underline decoration-transparent hover:decoration-forest"
+                href="#"
+                >Chính sách bảo mật</a
+              >
+              <a
+                class="hover:text-forest transition-colors underline decoration-transparent hover:decoration-forest"
+                href="#"
+                >Điều khoản dịch vụ</a
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+    </div>
+    <script src="../js/common.js"></script>
+    <script src="../js/sanpham.js"></script>
+  </body>
+</html>

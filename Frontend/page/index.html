@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html class="light" lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Trang Chủ Nông Sản Sạch | Nông Sản Sạch Cho Gia Đình</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;family=Playfair+Display:ital,wght@0,400;0,700;1,400&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body class="bg-background-light">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+      <!-- ===== HEADER ===== -->
+      <header
+        class="sticky top-0 z-50 w-full border-b border-forest/5 bg-background-light/90 backdrop-blur-md px-6 md:px-20 py-4 transition-all"
+      >
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+          <div class="flex items-center gap-12">
+            <div class="flex items-center gap-2 text-primary">
+              <span class="material-symbols-outlined text-3xl">eco</span>
+              <h2
+                class="text-xl font-extrabold tracking-tight font-display uppercase"
+              >
+                Green Market
+              </h2>
+            </div>
+            <nav class="hidden lg:flex items-center gap-8">
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/index.html"
+                >Trang chủ</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/sanpham.html"
+                >Sản phẩm</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="../page/bosuutap.html"
+                >Bộ sưu tập</a
+              >
+              <a
+                class="text-forest/80 hover:text-primary text-sm font-bold transition-colors"
+                href="#"
+                >Liên hệ</a
+              >
+            </nav>
+          </div>
+          <div class="flex items-center gap-4 lg:gap-6">
+            <div
+              class="hidden md:flex items-center bg-earth-beige/40 rounded-full px-4 py-1.5 border border-forest/5"
+            >
+              <span class="material-symbols-outlined text-forest/40 text-xl"
+                >search</span
+              >
+              <input
+                class="bg-transparent border-none focus:ring-0 text-sm w-48 placeholder:text-forest/40"
+                placeholder="Tìm kiếm nông sản..."
+                type="text"
+              />
+            </div>
+            <div class="flex items-center gap-2">
+              <a
+                href="../page/giohang.html"
+                class="p-2 hover:bg-earth-beige rounded-full transition-colors text-forest relative"
+              >
+                <span class="material-symbols-outlined">shopping_cart</span>
+                <span
+                  class="absolute top-1 right-1 bg-primary text-white text-[10px] font-bold px-1.5 rounded-full border-2 border-background-light"
+                  >0</span
+                >
+              </a>
+
+              <a
+                href="../page/dangnhap.html"
+                class="p-2 hover:bg-earth-beige rounded-full transition-colors text-forest relative"
+              >
+                <span class="material-symbols-outlined">person</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- ===== HEADER ===== -->
+      <!-- ===== HERO SECTION (banner lớn đầu trang) ===== -->
+      <section
+        class="relative h-[90vh] w-full flex items-center justify-center overflow-hidden"
+      >
+        <div class="absolute inset-0 z-0">
+          <div
+            class="absolute inset-0 bg-gradient-to-r from-forest/60 via-forest/20 to-transparent z-10"
+          ></div>
+          <img
+            class="w-full h-full object-cover scale-105"
+            data-alt="Nông trại xanh ngát lúc bình minh"
+            src="../img/banner.png"
+          />
+        </div>
+        <div
+          class="relative z-20 text-left px-6 md:px-20 w-full max-w-7xl mx-auto"
+        >
+          <div class="reveal">
+            <span
+              class="inline-block px-4 py-1 rounded-full bg-white/20 backdrop-blur-md text-white font-bold text-xs uppercase tracking-widest mb-6 border border-white/30"
+              >Nông Sản Cao Cấp 2024</span
+            >
+            <h1
+              class="text-white text-5xl md:text-8xl font-serif mb-6 leading-tight max-w-3xl"
+            >
+              Nông Sản Sạch <br />
+              Cho Gia Đình
+            </h1>
+            <p
+              class="text-white/90 text-lg md:text-xl font-display mb-10 max-w-2xl leading-relaxed"
+            >
+              Trải nghiệm hương vị thuần khiết từ những mảnh vườn canh tác hữu
+              cơ, thu hoạch tận gốc và giao tận tay chỉ trong 24 giờ.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+              <a
+                href="../page/sanpham.html"
+                class="w-full sm:w-auto px-10 py-4 bg-primary text-white font-bold rounded-lg hover:bg-forest hover:shadow-xl transition-all flex items-center justify-center gap-2 group"
+              >
+                Mua Ngay
+                <span
+                  class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+                >
+                  arrow_forward
+                </span>
+              </a>
+              <a
+                href="../page/bosuutap.html"
+                class="w-full sm:w-auto px-10 py-4 bg-white/10 backdrop-blur-md border border-white/40 text-white font-bold rounded-lg hover:bg-white/20 transition-all text-center"
+              >
+                Khám Phá Nông Trại
+              </a>
+            </div>
+          </div>
+        </div>
+        <div
+          class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce"
+        >
+          <span class="material-symbols-outlined text-white text-3xl"
+            >expand_more</span
+          >
+        </div>
+      </section>
+      <!-- ===== HERO SECTION (banner lớn đầu trang) ===== -->
+      <!-- ===== DANH MỤC SẢN PHẨM ===== -->
+      <main class="flex-1 w-full bg-background-light">
+        <section class="max-w-7xl mx-auto px-6 py-24">
+          <div
+            class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6 reveal"
+          >
+            <div class="max-w-xl">
+              <h2 class="text-3xl md:text-5xl font-serif text-forest mb-4">
+                Danh mục nổi bật
+              </h2>
+              <p class="text-forest/60">
+                Tuyển chọn những sản phẩm tinh túy nhất từ các vùng canh tác bền
+                vững trên khắp cả nước.
+              </p>
+            </div>
+            <a
+              class="text-primary font-bold flex items-center gap-2 hover:underline group"
+              href="../page/bosuutap.html"
+            >
+              Xem tất cả bộ sưu tập
+              <span
+                class="material-symbols-outlined group-hover:translate-x-1 transition-transform"
+                >trending_flat</span
+              >
+            </a>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <a href="../page/raucuhuuco.html " class="block">
+              <div
+                class="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer reveal delay-1"
+              >
+                <img
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="../img/rancu.png"
+                />
+
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity"
+                ></div>
+
+                <div class="absolute bottom-0 p-8 w-full">
+                  <h3 class="text-white text-2xl font-bold font-serif">
+                    Rau Củ Hữu Cơ
+                  </h3>
+
+                  <p
+                    class="text-white/80 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Tươi mới mỗi ngày từ vườn
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a href="../page/traicaymuavu.html" class="block">
+              <div
+                class="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer reveal delay-2"
+              >
+                <img
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="../img/traicay.png"
+                />
+
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity"
+                ></div>
+
+                <div class="absolute bottom-0 p-8 w-full">
+                  <h3 class="text-white text-2xl font-bold font-serif">
+                    Trái Cây Mùa Vụ
+                  </h3>
+
+                  <p
+                    class="text-white/80 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Vị ngọt tự nhiên nhất
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a href="../page/ngucochat.html" class="block">
+              <div
+                class="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer reveal delay-3"
+              >
+                <img
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="../img/ngucoc.png"
+                />
+
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity"
+                ></div>
+
+                <div class="absolute bottom-0 p-8 w-full">
+                  <h3 class="text-white text-2xl font-bold font-serif">
+                    Ngũ Cốc & Hạt
+                  </h3>
+
+                  <p
+                    class="text-white/80 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Nguồn dinh dưỡng dồi dào
+                  </p>
+                </div>
+              </div>
+            </a>
+
+            <a href="../page/suatrung.html" class="block">
+              <div
+                class="group relative aspect-[4/5] overflow-hidden rounded-2xl cursor-pointer reveal delay-4"
+              >
+                <img
+                  class="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  src="../img/trung.png"
+                />
+
+                <div
+                  class="absolute inset-0 bg-gradient-to-t from-forest/80 via-transparent to-transparent opacity-60 group-hover:opacity-90 transition-opacity"
+                ></div>
+
+                <div class="absolute bottom-0 p-8 w-full">
+                  <h3 class="text-white text-2xl font-bold font-serif">
+                    Sữa & Trứng
+                  </h3>
+
+                  <p
+                    class="text-white/80 text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    Chuẩn vị trang trại
+                  </p>
+                </div>
+              </div>
+            </a>
+          </div>
+        </section>
+        <!-- ===== DANH MỤC SẢN PHẨM ===== -->
+        <!-- ===== ƯU ĐÃI TRONG NGÀY ===== -->
+        <section class="bg-forest py-24">
+          <div class="max-w-7xl mx-auto px-6">
+            <div
+              class="flex flex-col md:flex-row items-center justify-between mb-16 gap-8 reveal"
+            >
+              <div>
+                <h2 class="text-4xl md:text-5xl font-serif text-white mb-3">
+                  Ưu đãi trong ngày
+                </h2>
+                <p class="text-white/60">
+                  Những sản phẩm tươi ngon nhất với mức giá đặc biệt chỉ trong
+                  hôm nay.
+                </p>
+              </div>
+              <div
+                class="flex items-center gap-6 bg-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm"
+              >
+                <span
+                  class="text-white/40 uppercase tracking-widest text-xs font-bold"
+                  >Kết thúc sau:</span
+                >
+
+                <div class="flex gap-4">
+                  <div class="text-center">
+                    <div id="hours" class="text-accent text-3xl font-bold">
+                      00
+                    </div>
+                    <div class="text-white/30 text-[10px] uppercase font-bold">
+                      Giờ
+                    </div>
+                  </div>
+
+                  <div class="text-white/20 text-3xl font-light">:</div>
+
+                  <div class="text-center">
+                    <div id="minutes" class="text-accent text-3xl font-bold">
+                      00
+                    </div>
+                    <div class="text-white/30 text-[10px] uppercase font-bold">
+                      Phút
+                    </div>
+                  </div>
+
+                  <div class="text-white/20 text-3xl font-light">:</div>
+
+                  <div class="text-center">
+                    <div id="seconds" class="text-accent text-3xl font-bold">
+                      00
+                    </div>
+                    <div class="text-white/30 text-[10px] uppercase font-bold">
+                      Giây
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              id="deal-products"
+              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"
+            >
+              <!-- Sau này JS sẽ render sản phẩm -->
+            </div>
+          </div>
+        </section>
+        <!-- ===== ƯU ĐÃI TRONG NGÀY ===== -->
+        <!-- ===== GIỚI THIỆU NÔNG TRẠI ===== -->
+        <section
+          class="py-32 max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-24 items-center"
+        >
+          <div class="relative reveal">
+            <div
+              class="absolute -top-12 -left-12 w-64 h-64 bg-accent/20 rounded-full blur-3xl"
+            ></div>
+            <img
+              class="rounded-3xl relative z-10 shadow-2xl border-8 border-white"
+              data-alt="Người nông dân hạnh phúc"
+              src="../img/farmer.png"
+            />
+            <div
+              class="absolute -bottom-10 -right-10 bg-earth-beige p-8 rounded-2xl shadow-2xl z-20 max-w-xs border border-white/50 backdrop-blur-sm"
+            >
+              <div class="flex text-primary mb-3">
+                <span class="material-symbols-outlined fill-1">star</span>
+                <span class="material-symbols-outlined fill-1">star</span>
+                <span class="material-symbols-outlined fill-1">star</span>
+                <span class="material-symbols-outlined fill-1">star</span>
+                <span class="material-symbols-outlined fill-1">star</span>
+              </div>
+              <p class="text-forest italic text-sm mb-4 leading-relaxed">
+                "Chất lượng hạt ngũ cốc và độ tươi của rau xanh là không gì sánh
+                bằng. Một trải nghiệm từ trang trại đến bàn ăn đích thực."
+              </p>
+              <span class="font-bold text-forest block">Thomas Miller</span>
+              <span class="text-forest/60 text-xs block font-medium"
+                >Đầu bếp thực phẩm hữu cơ</span
+              >
+            </div>
+          </div>
+          <div class="reveal delay-2">
+            <h2
+              class="text-4xl md:text-5xl font-serif text-forest mb-8 leading-tight"
+            >
+              Canh tác bền vững, <br />
+              Hương vị vượt trội.
+            </h2>
+            <div class="space-y-8">
+              <div class="flex gap-6">
+                <div class="bg-accent/20 p-4 rounded-xl h-fit">
+                  <span class="material-symbols-outlined text-primary text-3xl"
+                    >verified</span
+                  >
+                </div>
+                <div>
+                  <h4 class="font-bold text-forest text-lg mb-2">
+                    Chứng nhận hữu cơ
+                  </h4>
+                  <p class="text-forest/60 text-sm leading-relaxed">
+                    Mọi sản phẩm đều trải qua quy trình kiểm định nghiêm ngặt để
+                    đảm bảo không tồn dư thuốc bảo vệ thực vật.
+                  </p>
+                </div>
+              </div>
+              <div class="flex gap-6">
+                <div class="bg-accent/20 p-4 rounded-xl h-fit">
+                  <span class="material-symbols-outlined text-primary text-3xl"
+                    >local_shipping</span
+                  >
+                </div>
+                <div>
+                  <h4 class="font-bold text-forest text-lg mb-2">
+                    Thu hoạch trong ngày
+                  </h4>
+                  <p class="text-forest/60 text-sm leading-relaxed">
+                    Chúng tôi thu hoạch từ sáng sớm và giao hàng ngay để giữ
+                    trọn vẹn hàm lượng dinh dưỡng và độ tươi ngon.
+                  </p>
+                </div>
+              </div>
+              <div class="flex gap-6">
+                <div class="bg-accent/20 p-4 rounded-xl h-fit">
+                  <span class="material-symbols-outlined text-primary text-3xl"
+                    >handshake</span
+                  >
+                </div>
+                <div>
+                  <h4 class="font-bold text-forest text-lg mb-2">
+                    Trực tiếp từ nông dân
+                  </h4>
+                  <p class="text-forest/60 text-sm leading-relaxed">
+                    Lợi nhuận được chia sẻ trực tiếp tới mạng lưới các hộ nông
+                    dân địa phương, thúc đẩy kinh tế bền vững.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <!-- ===== GIỚI THIỆU NÔNG TRẠI ===== -->
+        <!-- ===== FOOTER ===== -->
+      </main>
+      <footer class="bg-earth-beige/30 border-t border-forest/10 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+          <div
+            class="bg-forest rounded-[2rem] p-10 md:p-16 flex flex-col lg:flex-row items-center justify-between mb-24 reveal"
+          >
+            <div class="mb-10 lg:mb-0 max-w-lg">
+              <h3 class="text-3xl md:text-4xl font-serif text-white mb-4">
+                Đăng ký nhận tin từ vườn
+              </h3>
+              <p class="text-white/60">
+                Nhận thông tin về các ưu đãi độc quyền, công thức nấu ăn theo
+                mùa và tin tức mới nhất từ nông trại.
+              </p>
+            </div>
+            <form class="flex w-full lg:w-auto gap-4">
+              <input
+                class="bg-white/10 border-white/20 text-white rounded-xl px-6 py-5 focus:ring-accent focus:border-accent w-full md:w-96 placeholder:text-white/40"
+                placeholder="Địa chỉ email của bạn"
+                type="email"
+              />
+              <button
+                class="bg-accent text-forest font-bold px-10 py-5 rounded-xl hover:bg-white transition-all whitespace-nowrap"
+              >
+                Đăng ký
+              </button>
+            </form>
+          </div>
+          <div
+            class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-16 mb-24"
+          >
+            <div class="col-span-2">
+              <div class="flex items-center gap-2 text-primary mb-8">
+                <span class="material-symbols-outlined text-4xl">eco</span>
+                <h2 class="text-2xl font-extrabold tracking-tight font-display">
+                  AgriFresh
+                </h2>
+              </div>
+              <p class="text-forest/70 max-w-sm mb-8 leading-relaxed">
+                Đưa nông sản sạch từ tâm huyết của người nông dân đến gian bếp
+                của mỗi gia đình Việt. Bền vững, tử tế và an lành.
+              </p>
+              <div class="flex gap-5">
+                <a
+                  class="w-11 h-11 rounded-full border border-forest/10 flex items-center justify-center text-forest hover:bg-primary hover:text-white transition-all"
+                  href="#"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"
+                    ></path>
+                  </svg>
+                </a>
+                <a
+                  class="w-11 h-11 rounded-full border border-forest/10 flex items-center justify-center text-forest hover:bg-primary hover:text-white transition-all"
+                  href="#"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"
+                    ></path>
+                  </svg>
+                </a>
+              </div>
+            </div>
+            <div>
+              <h4
+                class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+              >
+                Sản phẩm
+              </h4>
+              <ul class="space-y-4 text-forest/70 text-sm">
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Rau củ sạch</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Trái cây nội địa</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Sữa &amp; Trứng hữu cơ</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Thịt &amp; Gia cầm</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4
+                class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+              >
+                Về chúng tôi
+              </h4>
+              <ul class="space-y-4 text-forest/70 text-sm">
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Câu chuyện</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Phát triển bền vững</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Đối tác nông trại</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Tuyển dụng</a
+                  >
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4
+                class="font-bold text-forest mb-8 uppercase tracking-widest text-xs"
+              >
+                Hỗ trợ
+              </h4>
+              <ul class="space-y-4 text-forest/70 text-sm">
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Giao hàng</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Chính sách đổi trả</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Câu hỏi thường gặp</a
+                  >
+                </li>
+                <li>
+                  <a class="hover:text-primary transition-colors" href="#"
+                    >Liên hệ</a
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div
+            class="border-t border-forest/10 pt-10 flex flex-col md:flex-row justify-between items-center gap-6"
+          >
+            <p class="text-forest/50 text-xs">
+              © 2024 Green Market E-commerce. Tất cả các quyền được bảo hộ.
+            </p>
+            <div class="flex items-center gap-8">
+              <img
+                class="opacity-40 grayscale hover:grayscale-0 transition-all cursor-pointer h-6"
+                data-alt="Phương thức thanh toán"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDgx7hVCWRbJa0NvduAlDSXcthIbKlb8_IdzCqdDg8pDI7Prd7QdVYS8dBHYL3Z6Yaxgj0kGFwAi7RQUEB4J5g4DO3d3GqqiOd4ImgBZSop2UrALwsYgc7hXSMCPDubcW8hhGhN_WFv3v3fsRP5l-sZVirh1p_RatEvC63bz17Gyi0ti3U5WhIKuVPIbdnKcAWt0sF0ofJoPF0kwhCz_oMH-yo0Lx6Q_kxYc89c40-64dUQKWEfZazwER7lqx662EkVrsptNRvx58"
+              />
+              <div class="flex gap-6 text-forest/50 text-xs font-medium">
+                <a
+                  class="hover:text-forest transition-colors underline decoration-transparent hover:decoration-forest"
+                  href="#"
+                  >Chính sách bảo mật</a
+                >
+                <a
+                  class="hover:text-forest transition-colors underline decoration-transparent hover:decoration-forest"
+                  href="#"
+                  >Điều khoản dịch vụ</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </footer>
+      <!-- ===== FOOTER ===== -->
+    </div>
+    <script src="../js/common.js"></script>
+    <script src="../js/trangchu.js"></script>
+  </body>
+</html>
