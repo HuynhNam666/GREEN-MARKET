@@ -6,15 +6,19 @@
   };
 
   const FILTER_ALIASES = {
-    rau: ['rau', 'cu', 'rau cu', 'huu co', 'organic', 'vegetable'],
-    trai: ['trai', 'hoa qua', 'trai cay', 'fruit'],
-    hat: ['hat', 'ngu coc', 'grain', 'seed'],
-    suatrung: ['sua', 'trung', 'egg', 'milk', 'dairy'],
-    chebien: ['che bien', 'thuc pham che bien', 'processed', 'dong goi'],
-    dacsan: ['dac san', 'vung mien', 'regional', 'specialty'],
-    matong: ['mat ong', 'honey'],
+    rau: ['rau cu huu co', 'rau huu co', 'organic vegetable', 'vegetable'],
+    traicay: ['trai cay mua vu', 'hoa qua', 'fruit', 'seasonal fruit'],
+    ngucoc: ['ngu coc hat', 'ngu coc', 'grain', 'seed'],
+    suatrung: ['sua trung', 'egg', 'milk', 'dairy'],
+    chebien: ['thuc pham che bien', 'che bien', 'processed', 'dong goi'],
+    dacsan: ['dac san vung mien', 'dac san', 'regional', 'specialty'],
+    thiennhien: ['san pham tu thien nhien', 'thien nhien', 'mat ong', 'honey'],
     combo: ['combo', 'set', 'goi'],
-    qua: ['qua tang', 'gift', 'qua'],
+    quatang: ['qua tang', 'gift', 'hop qua', 'gio qua'],
+    matong: ['san pham tu thien nhien', 'thien nhien', 'mat ong', 'honey'],
+    qua: ['qua tang', 'gift', 'hop qua', 'gio qua'],
+    trai: ['trai cay mua vu', 'hoa qua', 'fruit'],
+    hat: ['ngu coc hat', 'grain', 'seed'],
     co: ['huu co', 'organic'],
     he: ['he', 'summer'],
     lanh: ['lanh', 'dong', 'winter', 'mua lanh'],
@@ -787,90 +791,118 @@
       });
     },
 
+    async openShopConversation(context) {
+      const user = await this.refreshCurrentUser();
+      if (!user) {
+        this.redirectToLogin();
+        return null;
+      }
+
+      const response = await this.request('/api/chat/open', {
+        method: 'POST',
+        body: {
+          sellerId: context?.sellerId || null,
+          shopId: context?.shopId || null,
+          productId: context?.productId || null,
+          orderId: context?.orderId || null,
+        },
+      });
+
+      return response;
+    },
+
     bindFloatingChatHandoff(button, context) {
       if (!button || button.dataset.bound === 'true') return;
       button.dataset.bound = 'true';
+
       button.addEventListener('click', async () => {
-        if (!context?.sellerId) {
-          this.notify('Hiện chưa xác định được shop để mở hội thoại trực tiếp.', 'warning');
-          return;
-        }
+        try {
+          const opened = await this.openShopConversation(context);
+          if (!opened?.conversationId) {
+            this.notify('Không mở được hội thoại với shop.', 'error');
+            return;
+          }
 
-        const user = await this.refreshCurrentUser();
-        if (!user) {
-          this.redirectToLogin();
-          return;
+          window.location.href = this.buildPageUrl('chat.html', {
+            conversationId: opened.conversationId,
+            sellerId: opened.sellerId,
+            shopId: opened.shopId,
+            productId: context?.productId || undefined,
+            orderId: context?.orderId || undefined,
+          });
+        } catch (error) {
+          this.notify(error.message || 'Không mở được hội thoại với shop.', 'error');
         }
-
-        const targetUrl = this.buildPageUrl('chat.html', {
-          sellerId: context.sellerId,
-          shopId: context.shopId,
-          productId: context.productId,
-        });
-        window.location.href = targetUrl;
       });
     },
 
     async sendFloatingChatMessage(widget, message) {
-      if (!widget || !message) return;
-      const input = widget.querySelector('.gm-chat-input');
-      const submitButton = widget.querySelector('.gm-chat-submit');
-      const messages = widget.querySelector('.gm-chat-messages');
-      const prompts = widget.querySelector('.gm-chat-prompts');
-      const context = this.getAssistantContext();
+  if (!widget || !message) return;
+  const input = widget.querySelector('.gm-chat-input');
+  const submitButton = widget.querySelector('.gm-chat-submit');
+  const messages = widget.querySelector('.gm-chat-messages');
+  const prompts = widget.querySelector('.gm-chat-prompts');
+  const context = this.getAssistantContext();
 
-      this.appendFloatingChatMessage(messages, {
-        isUser: true,
-        sender: 'Bạn',
-        text: message,
-      });
+  this.appendFloatingChatMessage(messages, {
+    isUser: true,
+    sender: 'Bạn',
+    text: message,
+  });
 
-      const typing = this.appendFloatingChatMessage(messages, {
-        isUser: false,
-        sender: 'AgriFresh AI',
-        text: 'Đang phân tích câu hỏi của bạn...',
-      });
+  const typing = this.appendFloatingChatMessage(messages, {
+    isUser: false,
+    sender: 'AgriFresh AI',
+    text: 'Đang phân tích câu hỏi của bạn...',
+  });
 
-      if (submitButton) submitButton.disabled = true;
-      if (input) input.disabled = true;
+  if (submitButton) submitButton.disabled = true;
+  if (input) input.disabled = true;
 
-      try {
-        const response = await this.request('/api/chat-assistant/ask', {
-          method: 'POST',
-          body: {
-            message,
-            sellerId: context.sellerId,
-            productId: context.productId,
-            orderId: context.orderId,
-          },
-        });
+  try {
+    const response = await this.request('/api/chat-assistant/ask', {
+      method: 'POST',
+      body: {
+        message,
+        sellerId: context.sellerId,
+        productId: context.productId,
+        orderId: context.orderId,
+      },
+    });
 
-        typing?.remove();
-        this.appendFloatingChatMessage(messages, {
-          isUser: false,
-          sender: response.assistantName || 'AgriFresh AI',
-          text: [response.answer, response.handoffHint].filter(Boolean).join('\n\n'),
-        });
-        this.renderFloatingChatPrompts(prompts, response.suggestions, (prompt) => {
-          if (input) input.value = prompt;
-          this.sendFloatingChatMessage(widget, prompt);
-        });
-      } catch (error) {
-        typing?.remove();
-        this.appendFloatingChatMessage(messages, {
-          isUser: false,
-          sender: 'AgriFresh AI',
-          text: error.message || 'Mình chưa thể trả lời ngay lúc này. Bạn vui lòng thử lại sau.',
-        });
-      } finally {
-        if (submitButton) submitButton.disabled = false;
-        if (input) {
-          input.disabled = false;
-          input.value = '';
-          input.focus();
-        }
-      }
-    },
+    typing?.remove();
+    this.appendFloatingChatMessage(messages, {
+      isUser: false,
+      sender: response.assistantName || 'AgriFresh AI',
+      text: [response.answer, response.handoffHint].filter(Boolean).join('\n\n'),
+    });
+
+    this.renderFloatingChatPrompts(prompts, response.suggestions, (prompt) => {
+      if (input) input.value = prompt;
+      this.sendFloatingChatMessage(widget, prompt);
+    });
+  } catch (error) {
+    typing?.remove();
+
+    const friendlyMessage =
+      error?.message === 'Failed to fetch'
+        ? 'Không kết nối được tới máy chủ API. Hãy kiểm tra backend đang chạy ở cổng 5000 và thử lại.'
+        : (error?.message || 'Mình chưa thể trả lời ngay lúc này. Bạn vui lòng thử lại sau.');
+
+    this.appendFloatingChatMessage(messages, {
+      isUser: false,
+      sender: 'AgriFresh AI',
+      text: friendlyMessage,
+    });
+  } finally {
+    if (submitButton) submitButton.disabled = false;
+    if (input) {
+      input.disabled = false;
+      input.value = '';
+      input.focus();
+    }
+  }
+},
 
     ensureFloatingChatWidget() {
       if (!this.shouldEnableFloatingChat()) return;
@@ -1141,8 +1173,21 @@
       ].join(' '));
     },
 
-    matchesProductFilter(product, filterKey, fallbackText) {
+    matchesProductFilter(product, filterKey, fallbackText, activeButton) {
       if (!filterKey || filterKey === 'all') return true;
+
+      const normalizedCategoryName = this.normalizeText(product?.categoryName || '');
+      const explicitCategoryNames = [
+        activeButton?.dataset?.categoryName,
+        activeButton?.dataset?.category,
+      ]
+        .map((value) => this.normalizeText(value || ''))
+        .filter(Boolean);
+
+      if (explicitCategoryNames.length && normalizedCategoryName) {
+        return explicitCategoryNames.some((candidate) => candidate === normalizedCategoryName);
+      }
+
       const searchIndex = this.getProductSearchIndex(product);
       const candidates = [
         ...(FILTER_ALIASES[filterKey] || []),
@@ -1264,8 +1309,22 @@
           }
 
           try {
-            const shop = await this.request(`/api/shops/${shopId}`, { auth: false });
-            window.location.href = this.buildPageUrl('chat.html', { sellerId: shop.sellerId, shopId, productId: Number(button.dataset.productId || 0) || undefined });
+            const opened = await this.openShopConversation({
+              shopId,
+              productId: Number(button.dataset.productId || 0) || null,
+            });
+
+            if (!opened?.conversationId) {
+              this.notify('Không mở được hội thoại với shop.', 'error');
+              return;
+            }
+
+            window.location.href = this.buildPageUrl('chat.html', {
+              conversationId: opened.conversationId,
+              sellerId: opened.sellerId,
+              shopId: opened.shopId,
+              productId: Number(button.dataset.productId || 0) || undefined,
+            });
           } catch (error) {
             this.notify(error.message, 'error');
           }
@@ -1410,13 +1469,15 @@
             priceValue.textContent = this.formatCurrency(maxPrice);
           }
 
+          const activeFilterButton = filterButtons.find((button) => button.dataset.filter === activeFilter) || null;
           const filteredProducts = this.sortProducts(
             scopedProducts.filter((product) => {
               const withinPrice = Number(product.price || 0) <= maxPrice;
               const matchesFilter = this.matchesProductFilter(
                 product,
                 activeFilter,
-                (filterButtons.find((button) => button.dataset.filter === activeFilter) || {}).textContent || ''
+                activeFilterButton?.textContent || '',
+                activeFilterButton
               );
               const matchesKeyword = !normalizedKeyword || this.getProductSearchIndex(product).includes(normalizedKeyword);
               return withinPrice && matchesFilter && matchesKeyword;

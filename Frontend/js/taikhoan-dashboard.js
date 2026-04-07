@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? { label: 'SKU quản lý', value: managedProducts.length, helper: 'Đang bán' }
         : ctx.currentUser.role === 'Shipper'
           ? { label: 'Job giao', value: ctx.state.availableOrders.length, helper: 'Chờ nhận' }
-          : { label: 'Hoàn tất', value: account.countOrdersByStatus(ctx.state.orders, ['Delivered', 'Completed']), helper: 'Đơn đã xong' };
+          : { label: 'Đã giao / hoàn tất', value: account.countOrdersByStatus(ctx.state.orders, ['Delivered', 'Completed']), helper: 'Đơn đã giao xong hoặc đã được người mua xác nhận.' };
 
     const cards = [
       {

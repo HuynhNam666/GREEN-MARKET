@@ -40,36 +40,189 @@ namespace GreenMarket.API.Controllers
             return User.IsInRole(UserRoles.Admin);
         }
 
-        [HttpPost("conversations")]
-        public async Task<IActionResult> CreateConversation([FromBody] CreateConversationRequest request)
+        private async Task<(int SellerId, int? ShopId, string? ShopName)> ResolveSellerContextAsync(OpenConversationRequest request, CancellationToken cancellationToken)
+        {
+            if (request.SellerId.HasValue)
+            {
+                var directSeller = await _context.Users
+                    .Where(user => user.Id == request.SellerId.Value && user.Role == UserRoles.Seller)
+                    .Select(user => new { user.Id })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (directSeller != null)
+                {
+                    int? directShopId = request.ShopId;
+                    string? directShopName = null;
+
+                    if (request.ShopId.HasValue)
+                    {
+                        var directShop = await _context.Shops
+                            .Where(shop => shop.Id == request.ShopId.Value && shop.SellerId == directSeller.Id)
+                            .Select(shop => new { shop.Id, shop.Name })
+                            .FirstOrDefaultAsync(cancellationToken);
+
+                        if (directShop != null)
+                        {
+                            directShopId = directShop.Id;
+                            directShopName = directShop.Name;
+                        }
+                    }
+
+                    return (directSeller.Id, directShopId, directShopName);
+                }
+            }
+
+            if (request.ShopId.HasValue)
+            {
+                var shop = await _context.Shops
+                    .Where(item => item.Id == request.ShopId.Value)
+                    .Select(item => new { item.Id, item.Name, item.SellerId })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (shop != null)
+                {
+                    return (shop.SellerId, shop.Id, shop.Name);
+                }
+            }
+
+            if (request.ProductId.HasValue)
+            {
+                var product = await _context.Products
+                    .Include(item => item.Shop)
+                    .Where(item => item.Id == request.ProductId.Value)
+                    .Select(item => new
+                    {
+                        item.Id,
+                        item.ShopId,
+                        ShopName = item.Shop != null ? item.Shop.Name : null,
+                        SellerId = item.Shop != null ? item.Shop.SellerId : (int?)null
+                    })
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (product?.SellerId is int productSellerId)
+                {
+                    return (productSellerId, product.ShopId, product.ShopName);
+                }
+            }
+
+            if (request.OrderId.HasValue)
+            {
+                var order = await _context.Orders
+                    .Include(item => item.OrderDetails)
+                        .ThenInclude(detail => detail.Product)
+                            .ThenInclude(product => product!.Shop)
+                    .Where(item => item.Id == request.OrderId.Value)
+                    .FirstOrDefaultAsync(cancellationToken);
+
+                if (order != null)
+                {
+                    var requestedShop = request.ShopId.HasValue
+                        ? order.OrderDetails.FirstOrDefault(detail => detail.Product != null && detail.Product.ShopId == request.ShopId.Value)?.Product?.Shop
+                        : null;
+
+                    var resolvedShop = requestedShop ?? order.OrderDetails
+                        .Select(detail => detail.Product?.Shop)
+                        .FirstOrDefault(shop => shop != null);
+
+                    if (resolvedShop != null)
+                    {
+                        return (resolvedShop.SellerId, resolvedShop.Id, resolvedShop.Name);
+                    }
+                }
+            }
+
+            throw new InvalidOperationException("Không xác định được shop để mở hội thoại.");
+        }
+
+        private async Task<object> BuildConversationSummaryAsync(Conversation conversation, int currentUserId, CancellationToken cancellationToken)
+        {
+            var lastMessage = await _context.Messages
+                .Where(message => message.ConversationId == conversation.Id)
+                .OrderByDescending(message => message.SentAt)
+                .Select(message => new { message.Content, message.SentAt })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            var unreadCount = await _context.Messages
+                .CountAsync(message => message.ConversationId == conversation.Id && !message.IsRead && message.SenderId != currentUserId, cancellationToken);
+
+            var botMessageCount = await _context.Messages
+                .CountAsync(message => message.ConversationId == conversation.Id && message.IsBot, cancellationToken);
+
+            return new
+            {
+                conversation.Id,
+                conversation.UserId,
+                UserName = conversation.User?.Username,
+                conversation.SellerId,
+                SellerName = conversation.Seller?.Username,
+                conversation.CreatedAt,
+                LastMessage = lastMessage?.Content,
+                LastMessageAt = lastMessage?.SentAt,
+                UnreadCount = unreadCount,
+                BotMessageCount = botMessageCount
+            };
+        }
+
+        [HttpPost("open")]
+        public async Task<IActionResult> OpenConversation([FromBody] OpenConversationRequest request)
         {
             var currentUserId = GetCurrentUserId();
 
-            var seller = await _context.Users.FirstOrDefaultAsync(x => x.Id == request.SellerId && x.Role == UserRoles.Seller);
-            if (seller == null)
+            try
             {
-                return BadRequest(new { message = "Seller không tồn tại." });
+                var (sellerId, shopId, shopName) = await ResolveSellerContextAsync(request, HttpContext.RequestAborted);
+
+                var seller = await _context.Users
+                    .FirstOrDefaultAsync(user => user.Id == sellerId && user.Role == UserRoles.Seller, HttpContext.RequestAborted);
+
+                if (seller == null)
+                {
+                    return BadRequest(new { message = "Shop không tồn tại hoặc chưa có người bán hợp lệ." });
+                }
+
+                var conversation = await _context.Conversations
+                    .Include(item => item.User)
+                    .Include(item => item.Seller)
+                    .FirstOrDefaultAsync(item => item.UserId == currentUserId && item.SellerId == sellerId, HttpContext.RequestAborted);
+
+                if (conversation == null)
+                {
+                    conversation = new Conversation
+                    {
+                        UserId = currentUserId,
+                        SellerId = sellerId,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    _context.Conversations.Add(conversation);
+                    await _context.SaveChangesAsync(HttpContext.RequestAborted);
+                    conversation = await _context.Conversations
+                        .Include(item => item.User)
+                        .Include(item => item.Seller)
+                        .FirstAsync(item => item.Id == conversation.Id, HttpContext.RequestAborted);
+                }
+
+                var summary = await BuildConversationSummaryAsync(conversation, currentUserId, HttpContext.RequestAborted);
+                return Ok(new
+                {
+                    conversationId = conversation.Id,
+                    sellerId,
+                    sellerName = seller.Username,
+                    shopId,
+                    shopName,
+                    conversation = summary
+                });
             }
-
-            var existingConversation = await _context.Conversations
-                .FirstOrDefaultAsync(x => x.UserId == currentUserId && x.SellerId == request.SellerId);
-
-            if (existingConversation != null)
+            catch (InvalidOperationException ex)
             {
-                return Ok(existingConversation);
+                return BadRequest(new { message = ex.Message });
             }
+        }
 
-            var conversation = new Conversation
-            {
-                UserId = currentUserId,
-                SellerId = request.SellerId,
-                CreatedAt = DateTime.UtcNow
-            };
-
-            _context.Conversations.Add(conversation);
-            await _context.SaveChangesAsync();
-
-            return Ok(conversation);
+        [HttpPost("conversations")]
+        public async Task<IActionResult> CreateConversation([FromBody] CreateConversationRequest request)
+        {
+            return await OpenConversation(new OpenConversationRequest { SellerId = request.SellerId });
         }
 
         [HttpGet("conversations")]
@@ -77,34 +230,61 @@ namespace GreenMarket.API.Controllers
         {
             var currentUserId = GetCurrentUserId();
 
-            var conversations = await _context.Conversations
-                .Include(x => x.User)
-                .Include(x => x.Seller)
-                .Include(x => x.Messages)
-                .Where(x => x.UserId == currentUserId || x.SellerId == currentUserId || IsAdmin())
-                .OrderByDescending(x => x.Id)
-                .Select(x => new
+            var conversationRows = await _context.Conversations
+                .Include(item => item.User)
+                .Include(item => item.Seller)
+                .Where(item => item.UserId == currentUserId || item.SellerId == currentUserId || IsAdmin())
+                .Select(item => new
                 {
-                    x.Id,
-                    x.UserId,
-                    UserName = x.User != null ? x.User.Username : null,
-                    x.SellerId,
-                    SellerName = x.Seller != null ? x.Seller.Username : null,
-                    x.CreatedAt,
-                    LastMessage = x.Messages
-                        .OrderByDescending(m => m.SentAt)
-                        .Select(m => m.Content)
-                        .FirstOrDefault(),
-                    LastMessageAt = x.Messages
-                        .OrderByDescending(m => m.SentAt)
-                        .Select(m => m.SentAt)
-                        .FirstOrDefault(),
-                    UnreadCount = x.Messages.Count(m => !m.IsRead && m.SenderId != currentUserId),
-                    BotMessageCount = x.Messages.Count(m => m.IsBot)
+                    item.Id,
+                    item.UserId,
+                    UserName = item.User != null ? item.User.Username : null,
+                    item.SellerId,
+                    SellerName = item.Seller != null ? item.Seller.Username : null,
+                    item.CreatedAt,
+                    LastMessage = item.Messages.OrderByDescending(message => message.SentAt).Select(message => message.Content).FirstOrDefault(),
+                    LastMessageAt = item.Messages.OrderByDescending(message => message.SentAt).Select(message => (DateTime?)message.SentAt).FirstOrDefault(),
+                    UnreadCount = item.Messages.Count(message => !message.IsRead && message.SenderId != currentUserId),
+                    BotMessageCount = item.Messages.Count(message => message.IsBot)
                 })
-                .ToListAsync();
+                .ToListAsync(HttpContext.RequestAborted);
+
+            var conversations = conversationRows
+                .OrderByDescending(item => item.LastMessageAt ?? item.CreatedAt)
+                .ToList();
 
             return Ok(conversations);
+        }
+
+        [HttpDelete("conversations/{id}/history")]
+        public async Task<IActionResult> DeleteConversationHistory(int id)
+        {
+            var currentUserId = GetCurrentUserId();
+
+            var conversation = await _context.Conversations
+                .FirstOrDefaultAsync(item => item.Id == id, HttpContext.RequestAborted);
+
+            if (conversation == null)
+            {
+                return NotFound(new { message = "Không tìm thấy hội thoại." });
+            }
+
+            if (!IsAdmin() && conversation.UserId != currentUserId && conversation.SellerId != currentUserId)
+            {
+                return Forbid();
+            }
+
+            var messages = await _context.Messages
+                .Where(item => item.ConversationId == id)
+                .ToListAsync(HttpContext.RequestAborted);
+
+            if (messages.Any())
+            {
+                _context.Messages.RemoveRange(messages);
+                await _context.SaveChangesAsync(HttpContext.RequestAborted);
+            }
+
+            return Ok(new { message = "Đã xóa lịch sử trò chuyện." });
         }
 
         [HttpGet("conversations/{id}/messages")]
@@ -113,7 +293,7 @@ namespace GreenMarket.API.Controllers
             var currentUserId = GetCurrentUserId();
 
             var conversation = await _context.Conversations
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(item => item.Id == id, HttpContext.RequestAborted);
 
             if (conversation == null)
             {
@@ -126,31 +306,31 @@ namespace GreenMarket.API.Controllers
             }
 
             var unreadMessages = await _context.Messages
-                .Where(x => x.ConversationId == id && !x.IsRead && x.SenderId != currentUserId)
-                .ToListAsync();
+                .Where(item => item.ConversationId == id && !item.IsRead && item.SenderId != currentUserId)
+                .ToListAsync(HttpContext.RequestAborted);
 
             if (unreadMessages.Any())
             {
                 unreadMessages.ForEach(message => message.IsRead = true);
-                await _context.SaveChangesAsync();
+                await _context.SaveChangesAsync(HttpContext.RequestAborted);
             }
 
             var messages = await _context.Messages
-                .Include(x => x.Sender)
-                .Where(x => x.ConversationId == id)
-                .OrderBy(x => x.SentAt)
-                .Select(x => new
+                .Include(item => item.Sender)
+                .Where(item => item.ConversationId == id)
+                .OrderBy(item => item.SentAt)
+                .Select(item => new
                 {
-                    x.Id,
-                    x.ConversationId,
-                    x.SenderId,
-                    SenderName = x.IsBot ? "AgriFresh AI" : (x.Sender != null ? x.Sender.Username : null),
-                    x.Content,
-                    x.IsRead,
-                    x.IsBot,
-                    x.SentAt
+                    item.Id,
+                    item.ConversationId,
+                    item.SenderId,
+                    SenderName = item.IsBot ? "AgriFresh AI" : (item.Sender != null ? item.Sender.Username : null),
+                    item.Content,
+                    item.IsRead,
+                    item.IsBot,
+                    item.SentAt
                 })
-                .ToListAsync();
+                .ToListAsync(HttpContext.RequestAborted);
 
             return Ok(messages);
         }
@@ -166,7 +346,7 @@ namespace GreenMarket.API.Controllers
             }
 
             var conversation = await _context.Conversations
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .FirstOrDefaultAsync(item => item.Id == id, HttpContext.RequestAborted);
 
             if (conversation == null)
             {
@@ -189,9 +369,9 @@ namespace GreenMarket.API.Controllers
             };
 
             _context.Messages.Add(userMessage);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(HttpContext.RequestAborted);
 
-            var sender = await _context.Users.FindAsync(currentUserId);
+            var sender = await _context.Users.FindAsync(new object[] { currentUserId }, HttpContext.RequestAborted);
 
             var userResponse = new
             {
@@ -209,71 +389,70 @@ namespace GreenMarket.API.Controllers
                 .SendAsync("ReceiveMessage", userResponse);
 
             var shouldAutoReply = currentUserId == conversation.UserId
-                && _storeAssistantService.ShouldAutoReply(request.Content);
+    && _storeAssistantService.ShouldAutoReply(request.Content);
 
-            if (shouldAutoReply)
-            {
-                var assistantReply = await _storeAssistantService.AskAsync(
-                    new StoreAssistantRequest(
-                        request.Content.Trim(),
-                        conversation.SellerId,
-                        request.ProductId,
-                        request.OrderId,
-                        id,
-                        true),
-                    User,
-                    HttpContext.RequestAborted);
+if (shouldAutoReply)
+{
+    var assistantReply = await _storeAssistantService.AskAsync(
+        new StoreAssistantRequest(
+            request.Content.Trim(),
+            conversation.SellerId,
+            request.ProductId,
+            request.OrderId,
+            id,
+            true),
+        User,
+        HttpContext.RequestAborted);
 
-                var replyText = assistantReply.Answer;
-                if (!string.IsNullOrWhiteSpace(assistantReply.HandoffHint) && assistantReply.Topic is "policy" or "order")
-                {
-                    replyText = $"{replyText}\n\n{assistantReply.HandoffHint}";
-                }
+    var replyText = assistantReply.Answer;
+    if (!string.IsNullOrWhiteSpace(assistantReply.HandoffHint) && assistantReply.Topic is "policy" or "order")
+    {
+        replyText = $"{replyText}\n\n{assistantReply.HandoffHint}";
+    }
 
-                if (!string.IsNullOrWhiteSpace(replyText))
-                {
-                    var botMessage = new Message
-                    {
-                        ConversationId = id,
-                        SenderId = conversation.SellerId,
-                        Content = replyText,
-                        IsRead = false,
-                        IsBot = true,
-                        SentAt = DateTime.UtcNow
-                    };
+    if (!string.IsNullOrWhiteSpace(replyText))
+    {
+        var botMessage = new Message
+        {
+            ConversationId = id,
+            SenderId = conversation.SellerId,
+            Content = replyText,
+            IsRead = false,
+            IsBot = true,
+            SentAt = DateTime.UtcNow
+        };
 
-                    _context.Messages.Add(botMessage);
-                    await _context.SaveChangesAsync();
+        _context.Messages.Add(botMessage);
+        await _context.SaveChangesAsync(HttpContext.RequestAborted);
 
-                    var botResponse = new
-                    {
-                        botMessage.Id,
-                        botMessage.ConversationId,
-                        botMessage.SenderId,
-                        SenderName = assistantReply.AssistantName,
-                        botMessage.Content,
-                        botMessage.IsRead,
-                        botMessage.IsBot,
-                        botMessage.SentAt,
-                        Suggestions = assistantReply.Suggestions
-                    };
+        var botResponse = new
+        {
+            botMessage.Id,
+            botMessage.ConversationId,
+            botMessage.SenderId,
+            SenderName = assistantReply.AssistantName,
+            botMessage.Content,
+            botMessage.IsRead,
+            botMessage.IsBot,
+            botMessage.SentAt,
+            Suggestions = assistantReply.Suggestions
+        };
 
-                    await _hubContext.Clients.Group($"conversation-{id}")
-                        .SendAsync("ReceiveMessage", botResponse);
-                }
-            }
+        await _hubContext.Clients.Group($"conversation-{id}")
+            .SendAsync("ReceiveMessage", botResponse);
+    }
+}
 
             return Ok(userResponse);
         }
-
         [HttpPut("messages/{id}/read")]
         public async Task<IActionResult> MarkAsRead(int id)
         {
             var currentUserId = GetCurrentUserId();
 
             var message = await _context.Messages
-                .Include(x => x.Conversation)
-                .FirstOrDefaultAsync(x => x.Id == id);
+                .Include(item => item.Conversation)
+                .FirstOrDefaultAsync(item => item.Id == id, HttpContext.RequestAborted);
 
             if (message == null)
             {
@@ -293,7 +472,7 @@ namespace GreenMarket.API.Controllers
             }
 
             message.IsRead = true;
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(HttpContext.RequestAborted);
 
             return Ok(new { message = "Đã đánh dấu đã đọc." });
         }

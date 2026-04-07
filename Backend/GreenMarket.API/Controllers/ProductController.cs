@@ -77,7 +77,8 @@ namespace GreenMarket.API.Controllers
                     x.CategoryId,
                     CategoryName = x.Category != null ? x.Category.Name : null,
                     x.ShopId,
-                    ShopName = x.Shop != null ? x.Shop.Name : null
+                    ShopName = x.Shop != null ? x.Shop.Name : null,
+                    SellerId = x.Shop != null ? x.Shop.SellerId : (int?)null
                 })
                 .ToListAsync();
 
@@ -102,7 +103,8 @@ namespace GreenMarket.API.Controllers
                     product.CategoryId,
                     product.CategoryName,
                     product.ShopId,
-                    product.ShopName
+                    product.ShopName,
+                    product.SellerId
                 };
             });
 
@@ -128,7 +130,8 @@ namespace GreenMarket.API.Controllers
                     x.CategoryId,
                     CategoryName = x.Category != null ? x.Category.Name : null,
                     x.ShopId,
-                    ShopName = x.Shop != null ? x.Shop.Name : null
+                    ShopName = x.Shop != null ? x.Shop.Name : null,
+                    SellerId = x.Shop != null ? x.Shop.SellerId : (int?)null
                 })
                 .FirstOrDefaultAsync();
 
@@ -148,7 +151,8 @@ namespace GreenMarket.API.Controllers
                 product.CategoryId,
                 product.CategoryName,
                 product.ShopId,
-                product.ShopName
+                product.ShopName,
+                product.SellerId
             });
         }
 

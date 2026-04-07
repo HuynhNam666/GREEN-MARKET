@@ -47,11 +47,24 @@ namespace GreenMarket.API.Controllers
                 return NotFound(new { message = "Không tìm thấy đơn hàng." });
             }
 
+            if (string.Equals(order.PaymentMethod, PaymentMethods.CashOnDelivery, StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new
+                {
+                    message = "Đơn hàng COD không sử dụng thanh toán VNPay.",
+                    orderId = order.Id,
+                    paymentMethod = order.PaymentMethod
+                });
+            }
+
             if (responseCode != "00")
             {
-                if (order.Status == OrderStatuses.PendingPayment)
+                if (order.Status == OrderStatuses.PendingPayment || order.Status == OrderStatuses.PaymentFailed)
                 {
                     order.Status = OrderStatuses.PaymentFailed;
+                    order.PaymentStatus = PaymentStatuses.Unpaid;
+                    order.SettlementStatus = SettlementStatuses.NotReady;
+                    order.PaidAt = null;
                     await _context.SaveChangesAsync();
                 }
 
@@ -95,12 +108,15 @@ namespace GreenMarket.API.Controllers
                 if (!canCommitStock)
                 {
                     order.Status = OrderStatuses.PaymentFailed;
+                    order.PaymentStatus = PaymentStatuses.Paid;
+                    order.PaidAt ??= DateTime.UtcNow;
+                    order.SettlementStatus = SettlementStatuses.Reversed;
                     await _context.SaveChangesAsync(HttpContext.RequestAborted);
                     await transaction.CommitAsync(HttpContext.RequestAborted);
 
                     return Ok(new
                     {
-                        message = "Thanh toán đã nhận nhưng tồn kho không còn đủ. Vui lòng liên hệ shop để được hỗ trợ.",
+                        message = "Thanh toán đã nhận nhưng tồn kho không còn đủ. Đơn được chuyển sang chờ đối soát/hỗ trợ.",
                         orderId = order.Id,
                         status = order.Status
                     });
@@ -108,6 +124,9 @@ namespace GreenMarket.API.Controllers
 
                 await _inventoryAllocationService.CommitStockForOrderAsync(order.Id, HttpContext.RequestAborted);
                 order.Status = OrderStatuses.AwaitingConfirmation;
+                order.PaymentStatus = PaymentStatuses.Paid;
+                order.PaidAt ??= DateTime.UtcNow;
+                order.SettlementStatus = SettlementStatuses.Held;
                 await _context.SaveChangesAsync(HttpContext.RequestAborted);
                 await transaction.CommitAsync(HttpContext.RequestAborted);
 

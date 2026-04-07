@@ -67,6 +67,105 @@ namespace GreenMarket.API.Controllers
             };
         }
 
+        private static string NormalizePaymentMethod(string? paymentMethod)
+        {
+            if (string.Equals(paymentMethod, PaymentMethods.CashOnDelivery, StringComparison.OrdinalIgnoreCase))
+            {
+                return PaymentMethods.CashOnDelivery;
+            }
+
+            return PaymentMethods.VNPay;
+        }
+
+        private static string NormalizePaymentStatus(string? paymentStatus)
+        {
+            if (string.Equals(paymentStatus, PaymentStatuses.Paid, StringComparison.OrdinalIgnoreCase))
+            {
+                return PaymentStatuses.Paid;
+            }
+
+            if (string.Equals(paymentStatus, PaymentStatuses.Refunded, StringComparison.OrdinalIgnoreCase))
+            {
+                return PaymentStatuses.Refunded;
+            }
+
+            return PaymentStatuses.Unpaid;
+        }
+
+        private static string NormalizeSettlementStatus(string? settlementStatus)
+        {
+            if (string.Equals(settlementStatus, SettlementStatuses.Held, StringComparison.OrdinalIgnoreCase))
+            {
+                return SettlementStatuses.Held;
+            }
+
+            if (string.Equals(settlementStatus, SettlementStatuses.Released, StringComparison.OrdinalIgnoreCase))
+            {
+                return SettlementStatuses.Released;
+            }
+
+            if (string.Equals(settlementStatus, SettlementStatuses.Reversed, StringComparison.OrdinalIgnoreCase))
+            {
+                return SettlementStatuses.Reversed;
+            }
+
+            return SettlementStatuses.NotReady;
+        }
+
+        private static string TranslatePaymentMethod(string? paymentMethod)
+        {
+            return NormalizePaymentMethod(paymentMethod) switch
+            {
+                PaymentMethods.CashOnDelivery => "Thanh toán khi nhận hàng (COD)",
+                _ => "Thanh toán online qua VNPay"
+            };
+        }
+
+        private static string TranslatePaymentStatus(Order order)
+        {
+            return NormalizePaymentStatus(order.PaymentStatus) switch
+            {
+                PaymentStatuses.Paid => IsCashOnDelivery(order) ? "Đã thu tiền COD" : "Đã thanh toán online",
+                PaymentStatuses.Refunded => "Đã hoàn tiền",
+                _ => IsCashOnDelivery(order) ? "Chưa thu tiền COD" : "Chưa thanh toán"
+            };
+        }
+
+        private static string TranslateSettlementStatus(string? settlementStatus)
+        {
+            return NormalizeSettlementStatus(settlementStatus) switch
+            {
+                SettlementStatuses.Held => "Nền tảng đang giữ tiền",
+                SettlementStatuses.Released => "Đã giải ngân cho shop",
+                SettlementStatuses.Reversed => "Dừng giải ngân / cần đối soát",
+                _ => "Chưa đủ điều kiện giải ngân"
+            };
+        }
+
+        private static bool IsCashOnDelivery(Order order)
+        {
+            return string.Equals(
+                NormalizePaymentMethod(order.PaymentMethod),
+                PaymentMethods.CashOnDelivery,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsPaid(Order order)
+        {
+            return string.Equals(
+                NormalizePaymentStatus(order.PaymentStatus),
+                PaymentStatuses.Paid,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsSettlementReleased(Order order)
+        {
+            return string.Equals(
+                NormalizeSettlementStatus(order.SettlementStatus),
+                SettlementStatuses.Released,
+                StringComparison.OrdinalIgnoreCase);
+        }
+
         private static int GetProgressPercentage(string status)
         {
             return status switch
@@ -87,18 +186,32 @@ namespace GreenMarket.API.Controllers
             };
         }
 
-        private static string GetAttentionLabel(string status)
+        private static string GetAttentionLabel(Order order)
         {
-            return status switch
+            var settlementStatus = NormalizeSettlementStatus(order.SettlementStatus);
+
+            return order.Status switch
             {
-                OrderStatuses.PendingPayment => "Đơn đang giữ hàng chờ thanh toán.",
-                OrderStatuses.PaymentFailed => "Thanh toán chưa thành công, cần tạo lại link thanh toán.",
+                OrderStatuses.PendingPayment => "Đơn đang giữ hàng chờ thanh toán online.",
+                OrderStatuses.PaymentFailed => IsPaid(order)
+                    ? "Hệ thống đã ghi nhận tiền nhưng phát sinh lỗi xử lý đơn/tồn kho. Cần đối soát thủ công."
+                    : "Thanh toán chưa thành công, cần tạo lại link thanh toán.",
                 OrderStatuses.AwaitingConfirmation => "Shop cần xác nhận đơn để bắt đầu xử lý.",
                 OrderStatuses.Processing => "Shop đang soạn hàng và chuẩn bị bàn giao.",
                 OrderStatuses.ReadyToShip => "Đơn đã sẵn sàng để gán shipper hoặc nhận giao.",
-                OrderStatuses.Shipping => "Shipper đang giao tới địa chỉ nhận hàng.",
-                OrderStatuses.Delivered => "Đơn đã giao, chờ khách xác nhận hoàn tất.",
-                OrderStatuses.Completed => "Đơn đã khép lại thành công.",
+                OrderStatuses.Shipping => IsCashOnDelivery(order)
+                    ? "Shipper đang giao hàng. Tiền COD sẽ được thu khi giao thành công."
+                    : "Shipper đang giao tới địa chỉ nhận hàng.",
+                OrderStatuses.Delivered => IsCashOnDelivery(order)
+                    ? settlementStatus == SettlementStatuses.Released
+                        ? "Shipper đã giao thành công, đã thu tiền COD và shop đã được giải ngân."
+                        : "Shipper đã giao thành công và đã thu tiền COD. Nền tảng đang giữ tiền chờ khách xác nhận nhận hàng."
+                    : settlementStatus == SettlementStatuses.Released
+                        ? "Đơn đã giao, thanh toán online đã hoàn tất và shop đã được giải ngân."
+                        : "Đơn đã giao, thanh toán online đã ghi nhận. Nền tảng đang giữ tiền chờ khách xác nhận nhận hàng.",
+                OrderStatuses.Completed => IsSettlementReleased(order)
+                    ? "Khách đã xác nhận nhận hàng. Nền tảng đã giải ngân cho shop."
+                    : "Đơn đã khép lại thành công.",
                 OrderStatuses.Cancelled => "Đơn đã dừng xử lý.",
                 OrderStatuses.FailedDelivery => "Cần xử lý giao lại hoặc hủy đơn.",
                 OrderStatuses.ReturnRequested => "Đang chờ xử lý yêu cầu sau bán/đổi trả.",
@@ -116,6 +229,10 @@ namespace GreenMarket.API.Controllers
 
         private object BuildTimeline(Order order)
         {
+            var isCashOnDelivery = IsCashOnDelivery(order);
+            var isPaymentCollected = IsPaid(order);
+            var settlementStatus = NormalizeSettlementStatus(order.SettlementStatus);
+
             var stages = new List<object>
             {
                 new
@@ -130,15 +247,27 @@ namespace GreenMarket.API.Controllers
                 new
                 {
                     Key = "payment",
-                    Title = order.Status == OrderStatuses.PaymentFailed ? "Thanh toán thất bại" : "Thanh toán",
-                    Description = order.Status == OrderStatuses.PendingPayment
-                        ? "Đang chờ khách hoàn tất thanh toán."
+                    Title = isCashOnDelivery
+                        ? "Thu tiền khi giao hàng"
                         : order.Status == OrderStatuses.PaymentFailed
-                            ? "Khách cần thử lại thanh toán."
-                            : "Thanh toán đã được ghi nhận.",
-                    OccurredAt = order.Status == OrderStatuses.PendingPayment || order.Status == OrderStatuses.PaymentFailed ? (DateTime?)null : order.OrderDate,
-                    IsCompleted = order.Status != OrderStatuses.PendingPayment && order.Status != OrderStatuses.PaymentFailed,
-                    IsCurrent = order.Status == OrderStatuses.PendingPayment || order.Status == OrderStatuses.PaymentFailed
+                            ? "Thanh toán thất bại"
+                            : "Thanh toán online",
+                    Description = isCashOnDelivery
+                        ? isPaymentCollected
+                            ? "Shipper đã giao thành công và đã thu tiền COD."
+                            : "Đơn chọn COD. Shipper sẽ thu tiền sau khi giao thành công."
+                        : order.Status == OrderStatuses.PendingPayment
+                            ? "Đang chờ khách hoàn tất thanh toán online."
+                            : order.Status == OrderStatuses.PaymentFailed && !isPaymentCollected
+                                ? "Khách cần thử lại thanh toán."
+                                : "Thanh toán online đã được ghi nhận.",
+                    OccurredAt = isPaymentCollected
+                        ? order.PaidAt ?? (isCashOnDelivery ? order.DeliveredAt ?? order.CompletedAt : order.OrderDate)
+                        : (DateTime?)null,
+                    IsCompleted = isPaymentCollected,
+                    IsCurrent = !isPaymentCollected && (isCashOnDelivery
+                        ? new[] { OrderStatuses.AwaitingConfirmation, OrderStatuses.Processing, OrderStatuses.ReadyToShip, OrderStatuses.Shipping }.Contains(order.Status)
+                        : order.Status == OrderStatuses.PendingPayment || order.Status == OrderStatuses.PaymentFailed)
                 },
                 new
                 {
@@ -161,19 +290,33 @@ namespace GreenMarket.API.Controllers
                 new
                 {
                     Key = "completion",
-                    Title = order.Status == OrderStatuses.Cancelled ? "Đã hủy" : order.Status == OrderStatuses.Returned ? "Đã trả hàng" : "Hoàn tất",
-                    Description = order.Status == OrderStatuses.Delivered
-                        ? "Đơn đã giao thành công và chờ người mua xác nhận."
-                        : order.Status == OrderStatuses.Completed
-                            ? "Đơn đã hoàn tất."
-                            : order.Status == OrderStatuses.Cancelled
-                                ? "Đơn hàng đã bị hủy."
-                                : order.Status == OrderStatuses.Returned
-                                    ? "Đơn đã hoàn tất quy trình trả hàng."
-                                    : "Đơn đang tiếp tục được xử lý.",
-                    OccurredAt = order.CompletedAt ?? order.DeliveredAt ?? order.CancelledAt,
-                    IsCompleted = new[] { OrderStatuses.Delivered, OrderStatuses.Completed, OrderStatuses.Cancelled, OrderStatuses.Returned }.Contains(order.Status),
-                    IsCurrent = new[] { OrderStatuses.Delivered, OrderStatuses.Completed, OrderStatuses.Cancelled, OrderStatuses.Returned, OrderStatuses.ReturnRequested }.Contains(order.Status)
+                    Title = order.Status == OrderStatuses.Cancelled ? "Đã hủy" : order.Status == OrderStatuses.Returned ? "Đã trả hàng" : "Người mua xác nhận",
+                    Description = order.Status switch
+                    {
+                        OrderStatuses.Delivered => "Đơn đã giao xong, chờ người mua xác nhận đã nhận hàng.",
+                        OrderStatuses.Completed => "Người mua đã xác nhận nhận hàng. Đơn đã hoàn tất.",
+                        OrderStatuses.Cancelled => "Đơn hàng đã bị hủy.",
+                        OrderStatuses.Returned => "Đơn đã hoàn tất quy trình trả hàng.",
+                        _ => "Đơn đang tiếp tục được xử lý."
+                    },
+                    OccurredAt = order.CompletedAt ?? order.CancelledAt,
+                    IsCompleted = new[] { OrderStatuses.Completed, OrderStatuses.Cancelled, OrderStatuses.Returned }.Contains(order.Status),
+                    IsCurrent = new[] { OrderStatuses.Delivered, OrderStatuses.Completed, OrderStatuses.Cancelled, OrderStatuses.ReturnRequested, OrderStatuses.Returned }.Contains(order.Status)
+                },
+                new
+                {
+                    Key = "settlement",
+                    Title = "Giải ngân shop",
+                    Description = settlementStatus switch
+                    {
+                        SettlementStatuses.Held => "Nền tảng đang giữ tiền, chờ người mua xác nhận nhận hàng.",
+                        SettlementStatuses.Released => "Đã giải ngân cho shop sau khi đơn hoàn tất.",
+                        SettlementStatuses.Reversed => "Dừng giải ngân để đối soát/hoàn tiền.",
+                        _ => "Chưa đủ điều kiện giải ngân cho shop."
+                    },
+                    OccurredAt = settlementStatus == SettlementStatuses.Released ? order.CompletedAt : (DateTime?)null,
+                    IsCompleted = settlementStatus == SettlementStatuses.Released,
+                    IsCurrent = settlementStatus == SettlementStatuses.Held || settlementStatus == SettlementStatuses.Released || settlementStatus == SettlementStatuses.Reversed
                 }
             };
 
@@ -188,21 +331,30 @@ namespace GreenMarket.API.Controllers
                 CarrierLabel = order.AssignedShipper != null ? "Đội giao nội bộ Green Market" : "Đang chờ điều phối shipper",
                 CurrentStatusLabel = TranslateStatus(order.Status),
                 ProgressPercent = GetProgressPercentage(order.Status),
-                AttentionLabel = GetAttentionLabel(order.Status),
+                AttentionLabel = GetAttentionLabel(order),
                 AssignedShipperName = order.AssignedShipper?.Username,
                 DeliveryNote = order.Status switch
                 {
                     OrderStatuses.ReadyToShip => "Shop đã đóng gói xong và chờ shipper nhận đơn.",
-                    OrderStatuses.Shipping => order.ShippedAt.HasValue ? $"Đơn đã rời kho lúc {order.ShippedAt.Value:dd/MM/yyyy HH:mm}." : "Đơn đang trên đường giao tới khách.",
+                    OrderStatuses.Shipping => IsCashOnDelivery(order)
+                        ? order.ShippedAt.HasValue ? $"Đơn đã rời kho lúc {order.ShippedAt.Value:dd/MM/yyyy HH:mm}. Shipper sẽ thu tiền COD khi giao xong." : "Đơn đang trên đường giao tới khách."
+                        : order.ShippedAt.HasValue ? $"Đơn đã rời kho lúc {order.ShippedAt.Value:dd/MM/yyyy HH:mm}." : "Đơn đang trên đường giao tới khách.",
                     OrderStatuses.FailedDelivery => "Cần xác nhận lại địa chỉ, thời gian nhận hoặc thực hiện giao lại.",
-                    OrderStatuses.Delivered => order.DeliveredAt.HasValue ? $"Đơn đã giao lúc {order.DeliveredAt.Value:dd/MM/yyyy HH:mm}." : "Đơn đã giao thành công.",
-                    _ => GetAttentionLabel(order.Status)
+                    OrderStatuses.Delivered => IsCashOnDelivery(order)
+                        ? order.DeliveredAt.HasValue ? $"Đơn đã giao lúc {order.DeliveredAt.Value:dd/MM/yyyy HH:mm} và shipper đã thu tiền COD." : "Đơn đã giao thành công và đã thu tiền COD."
+                        : order.DeliveredAt.HasValue ? $"Đơn đã giao lúc {order.DeliveredAt.Value:dd/MM/yyyy HH:mm}." : "Đơn đã giao thành công.",
+                    OrderStatuses.Completed => IsSettlementReleased(order)
+                        ? "Người mua đã xác nhận nhận hàng. Shop đã đủ điều kiện nhận giải ngân."
+                        : "Người mua đã xác nhận nhận hàng.",
+                    _ => GetAttentionLabel(order)
                 }
             };
         }
 
         private object MapOrder(Order order)
         {
+            var normalizedPaymentStatus = NormalizePaymentStatus(order.PaymentStatus);
+            var normalizedSettlementStatus = NormalizeSettlementStatus(order.SettlementStatus);
             var sellerSlices = order.OrderDetails
                 .GroupBy(detail => new
                 {
@@ -253,6 +405,12 @@ namespace GreenMarket.API.Controllers
                 order.OrderCode,
                 order.OrderDate,
                 order.TotalAmount,
+                PaymentMethod = NormalizePaymentMethod(order.PaymentMethod),
+                PaymentMethodLabel = TranslatePaymentMethod(order.PaymentMethod),
+                PaymentStatus = normalizedPaymentStatus,
+                PaymentStatusLabel = TranslatePaymentStatus(order),
+                SettlementStatus = normalizedSettlementStatus,
+                SettlementStatusLabel = TranslateSettlementStatus(order.SettlementStatus),
                 order.Status,
                 StatusLabel = TranslateStatus(order.Status),
                 order.ShippingAddress,
@@ -262,6 +420,7 @@ namespace GreenMarket.API.Controllers
                 order.ConfirmedAt,
                 order.ShippedAt,
                 order.DeliveredAt,
+                order.PaidAt,
                 order.CompletedAt,
                 order.CancelledAt,
                 ProgressPercent = GetProgressPercentage(order.Status),
@@ -270,7 +429,15 @@ namespace GreenMarket.API.Controllers
                     IsHoldingStock = _reservationService.IsReserved(order),
                     Label = _reservationService.IsReserved(order)
                         ? "Hàng đang được giữ cho đơn chờ thanh toán."
-                        : "Tồn kho đã được ghi nhận theo trạng thái đơn hiện tại."
+                        : IsCashOnDelivery(order) && !IsPaid(order)
+                            ? "Đơn COD đã trừ tồn kho để shipper giao; tiền sẽ được thu khi giao thành công."
+                            : normalizedSettlementStatus == SettlementStatuses.Held
+                                ? "Nền tảng đang giữ tiền chờ người mua xác nhận nhận hàng."
+                                : normalizedSettlementStatus == SettlementStatuses.Released
+                                    ? "Đơn đã hoàn tất và tiền đã được giải ngân cho shop."
+                                    : normalizedSettlementStatus == SettlementStatuses.Reversed
+                                        ? "Khoản tiền của đơn này đang ở trạng thái dừng giải ngân để đối soát."
+                                        : "Tồn kho đã được ghi nhận theo trạng thái đơn hiện tại."
                 },
                 Shipping = BuildShippingOverview(order),
                 Timeline = BuildTimeline(order),
@@ -396,6 +563,17 @@ namespace GreenMarket.API.Controllers
                 return BadRequest(new { message = "Vui lòng nhập đầy đủ thông tin giao hàng." });
             }
 
+            if (!string.IsNullOrWhiteSpace(request.PaymentMethod) &&
+                !PaymentMethods.All.Contains(request.PaymentMethod.Trim(), StringComparer.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { message = "Phương thức thanh toán không hợp lệ." });
+            }
+
+            var paymentMethod = NormalizePaymentMethod(request.PaymentMethod);
+            var initialStatus = paymentMethod == PaymentMethods.CashOnDelivery
+                ? OrderStatuses.AwaitingConfirmation
+                : OrderStatuses.PendingPayment;
+
             foreach (var item in cart.CartItems)
             {
                 if (item.Product == null)
@@ -412,39 +590,64 @@ namespace GreenMarket.API.Controllers
 
             await using var transaction = await _context.Database.BeginTransactionAsync();
 
-            var order = new Order
+            try
             {
-                UserId = userId,
-                OrderDate = DateTime.UtcNow,
-                OrderCode = $"GM{DateTime.UtcNow:yyyyMMddHHmmssfff}",
-                Status = OrderStatuses.PendingPayment,
-                TotalAmount = cart.CartItems.Sum(x => x.Price * x.Quantity),
-                ShippingAddress = request.ShippingAddress.Trim(),
-                ContactName = request.ContactName.Trim(),
-                ContactPhone = request.ContactPhone.Trim(),
-                Note = request.Note?.Trim() ?? string.Empty
-            };
-
-            _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
-
-            foreach (var item in cart.CartItems)
-            {
-                _context.OrderDetails.Add(new OrderDetail
+                var order = new Order
                 {
-                    OrderId = order.Id,
-                    ProductId = item.ProductId,
-                    Quantity = item.Quantity,
-                    Price = item.Price
-                });
+                    UserId = userId,
+                    OrderDate = DateTime.UtcNow,
+                    OrderCode = $"GM{DateTime.UtcNow:yyyyMMddHHmmssfff}",
+                    PaymentMethod = paymentMethod,
+                    PaymentStatus = PaymentStatuses.Unpaid,
+                    SettlementStatus = SettlementStatuses.NotReady,
+                    Status = initialStatus,
+                    TotalAmount = cart.CartItems.Sum(x => x.Price * x.Quantity),
+                    ShippingAddress = request.ShippingAddress.Trim(),
+                    ContactName = request.ContactName.Trim(),
+                    ContactPhone = request.ContactPhone.Trim(),
+                    Note = request.Note?.Trim() ?? string.Empty
+                };
+
+                _context.Orders.Add(order);
+                await _context.SaveChangesAsync(HttpContext.RequestAborted);
+
+                foreach (var item in cart.CartItems)
+                {
+                    _context.OrderDetails.Add(new OrderDetail
+                    {
+                        OrderId = order.Id,
+                        ProductId = item.ProductId,
+                        Quantity = item.Quantity,
+                        Price = item.Price
+                    });
+                }
+
+                await _context.SaveChangesAsync(HttpContext.RequestAborted);
+
+                if (paymentMethod == PaymentMethods.CashOnDelivery)
+                {
+                    var canCommitStock = await _inventoryAllocationService.CanCommitOrderAsync(order.Id, HttpContext.RequestAborted);
+                    if (!canCommitStock)
+                    {
+                        await transaction.RollbackAsync(HttpContext.RequestAborted);
+                        return BadRequest(new { message = "Một hoặc nhiều sản phẩm vừa hết hàng. Vui lòng kiểm tra lại giỏ hàng." });
+                    }
+
+                    await _inventoryAllocationService.CommitStockForOrderAsync(order.Id, HttpContext.RequestAborted);
+                }
+
+                _context.CartItems.RemoveRange(cart.CartItems);
+                await _context.SaveChangesAsync(HttpContext.RequestAborted);
+                await transaction.CommitAsync(HttpContext.RequestAborted);
+
+                var createdOrder = await BuildOrderQuery().FirstAsync(x => x.Id == order.Id, HttpContext.RequestAborted);
+                return Ok(MapOrder(createdOrder));
             }
-
-            _context.CartItems.RemoveRange(cart.CartItems);
-            await _context.SaveChangesAsync();
-            await transaction.CommitAsync();
-
-            var createdOrder = await BuildOrderQuery().FirstAsync(x => x.Id == order.Id);
-            return Ok(MapOrder(createdOrder));
+            catch (Exception)
+            {
+                await transaction.RollbackAsync(HttpContext.RequestAborted);
+                throw;
+            }
         }
 
         [HttpPost("{orderId}/pay-url")]
@@ -457,6 +660,16 @@ namespace GreenMarket.API.Controllers
             if (order == null)
             {
                 return NotFound(new { message = "Không tìm thấy đơn hàng." });
+            }
+
+            if (string.Equals(order.PaymentMethod, PaymentMethods.CashOnDelivery, StringComparison.OrdinalIgnoreCase))
+            {
+                return BadRequest(new { message = "Đơn hàng COD không tạo link thanh toán online." });
+            }
+
+            if (order.Status == OrderStatuses.PaymentFailed && NormalizePaymentStatus(order.PaymentStatus) == PaymentStatuses.Paid)
+            {
+                return BadRequest(new { message = "Đơn đã ghi nhận tiền trước đó và đang chờ đối soát. Vui lòng liên hệ hỗ trợ thay vì thanh toán lại." });
             }
 
             if (order.Status == OrderStatuses.PaymentFailed)
@@ -578,17 +791,67 @@ namespace GreenMarket.API.Controllers
 
             order.Status = newStatus;
 
-            if (newStatus == OrderStatuses.Processing) order.ConfirmedAt = DateTime.UtcNow;
-            if (newStatus == OrderStatuses.Shipping) order.ShippedAt = DateTime.UtcNow;
-            if (newStatus == OrderStatuses.Delivered) order.DeliveredAt = DateTime.UtcNow;
-            if (newStatus == OrderStatuses.Completed) order.CompletedAt = DateTime.UtcNow;
+            if (newStatus == OrderStatuses.Processing)
+            {
+                order.ConfirmedAt = DateTime.UtcNow;
+            }
+
+            if (newStatus == OrderStatuses.Shipping)
+            {
+                order.ShippedAt = DateTime.UtcNow;
+            }
+
+            if (newStatus == OrderStatuses.Delivered)
+            {
+                order.DeliveredAt = DateTime.UtcNow;
+
+                if (IsCashOnDelivery(order))
+                {
+                    order.PaymentStatus = PaymentStatuses.Paid;
+                    order.PaidAt ??= order.DeliveredAt;
+                }
+
+                if (NormalizePaymentStatus(order.PaymentStatus) == PaymentStatuses.Paid)
+                {
+                    order.SettlementStatus = SettlementStatuses.Held;
+                }
+            }
+
+            if (newStatus == OrderStatuses.Completed)
+            {
+                order.CompletedAt = DateTime.UtcNow;
+
+                if (NormalizePaymentStatus(order.PaymentStatus) == PaymentStatuses.Paid)
+                {
+                    order.SettlementStatus = SettlementStatuses.Released;
+                }
+            }
+
             if (newStatus == OrderStatuses.Cancelled)
             {
                 order.CancelledAt = DateTime.UtcNow;
+                order.SettlementStatus = NormalizePaymentStatus(order.PaymentStatus) == PaymentStatuses.Paid
+                    ? SettlementStatuses.Reversed
+                    : SettlementStatuses.NotReady;
+
                 if (order.AssignedShipperId.HasValue)
                 {
                     order.AssignedShipperId = null;
                 }
+            }
+
+            if (newStatus == OrderStatuses.Returned)
+            {
+                order.SettlementStatus = NormalizePaymentStatus(order.PaymentStatus) == PaymentStatuses.Paid
+                    ? SettlementStatuses.Reversed
+                    : order.SettlementStatus;
+            }
+
+            if (newStatus == OrderStatuses.PaymentFailed)
+            {
+                order.PaymentStatus = PaymentStatuses.Unpaid;
+                order.SettlementStatus = SettlementStatuses.NotReady;
+                order.PaidAt = null;
             }
 
             await _context.SaveChangesAsync(HttpContext.RequestAborted);

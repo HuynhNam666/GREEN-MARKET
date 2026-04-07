@@ -10,6 +10,33 @@ namespace GreenMarket.API.Models
         public static readonly string[] All = { Admin, Seller, User, Shipper };
     }
 
+    public static class PaymentMethods
+    {
+        public const string VNPay = "VNPay";
+        public const string CashOnDelivery = "COD";
+
+        public static readonly string[] All = { VNPay, CashOnDelivery };
+    }
+
+    public static class PaymentStatuses
+    {
+        public const string Unpaid = "Unpaid";
+        public const string Paid = "Paid";
+        public const string Refunded = "Refunded";
+
+        public static readonly string[] All = { Unpaid, Paid, Refunded };
+    }
+
+    public static class SettlementStatuses
+    {
+        public const string NotReady = "NotReady";
+        public const string Held = "Held";
+        public const string Released = "Released";
+        public const string Reversed = "Reversed";
+
+        public static readonly string[] All = { NotReady, Held, Released, Reversed };
+    }
+
     public static class OrderStatuses
     {
         public const string PendingPayment = "PendingPayment";

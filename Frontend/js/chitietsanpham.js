@@ -144,16 +144,27 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     contactShopButton?.addEventListener('click', async () => {
-      const user = await app.refreshCurrentUser();
-      if (!user) {
-        app.redirectToLogin();
-        return;
+      try {
+        const opened = await app.openShopConversation({
+          sellerId: shop?.sellerId || null,
+          shopId: product.shopId || null,
+          productId: product.id,
+        });
+
+        if (!opened?.conversationId) {
+          app.notify('Không mở được hội thoại với shop.', 'error');
+          return;
+        }
+
+        window.location.href = app.buildPageUrl('chat.html', {
+          conversationId: opened.conversationId,
+          sellerId: opened.sellerId,
+          shopId: opened.shopId,
+          productId: product.id,
+        });
+      } catch (error) {
+        app.notify(error.message || 'Không mở được hội thoại với shop.', 'error');
       }
-      if (!shop) {
-        app.notify('Không tìm thấy thông tin người bán.', 'warning');
-        return;
-      }
-      window.location.href = app.buildPageUrl('chat.html', { sellerId: shop.sellerId, shopId: product.shopId, productId: product.id });
     });
 
     if (relatedContainer) {

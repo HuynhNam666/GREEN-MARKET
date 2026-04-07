@@ -45,9 +45,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         helper: 'Đơn chờ giao, đang giao hoặc cần giao lại.',
       },
       {
-        label: 'Hoàn tất',
+        label: 'Đã giao / hoàn tất',
         value: account.countOrdersByStatus(ctx.state.orders, ['Delivered', 'Completed']),
-        helper: 'Đơn đã giao xong hoặc đã xác nhận thành công.',
+        helper: 'Đơn đã giao xong hoặc người mua đã xác nhận nhận hàng.',
         valueClassName: 'text-emerald-700',
       },
     ];
@@ -60,7 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       { key: 'all', label: 'Tất cả' },
       { key: 'pending', label: 'Chờ xử lý' },
       { key: 'shipping', label: 'Đang giao' },
-      { key: 'completed', label: 'Hoàn tất' },
+      { key: 'completed', label: 'Đã giao / hoàn tất' },
       { key: 'issue', label: 'Sự cố / hậu mãi' },
     ];
 

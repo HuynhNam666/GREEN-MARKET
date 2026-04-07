@@ -5,6 +5,7 @@ namespace GreenMarket.API.DTOs
         public string ShippingAddress { get; set; } = string.Empty;
         public string ContactName { get; set; } = string.Empty;
         public string ContactPhone { get; set; } = string.Empty;
+        public string? PaymentMethod { get; set; }
         public string? Note { get; set; }
     }
 

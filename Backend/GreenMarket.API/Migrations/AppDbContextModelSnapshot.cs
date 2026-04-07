@@ -198,6 +198,12 @@ namespace GreenMarket.API.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasDefaultValue("VNPay");
+
                     b.Property<DateTime?>("ShippedAt")
                         .HasColumnType("datetime2");
 

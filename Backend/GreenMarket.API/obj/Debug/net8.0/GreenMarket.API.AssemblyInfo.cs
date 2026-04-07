@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GreenMarket.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+424c7315ca7b24439c9b1a798a24a4afd220c76b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f3ab61c02591a2401d756f7d879d3e656f7d80b9")]
 [assembly: System.Reflection.AssemblyProductAttribute("GreenMarket.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GreenMarket.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

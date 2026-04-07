@@ -13,6 +13,9 @@ namespace GreenMarket.API.Models
         public string OrderCode { get; set; } = $"GM{DateTime.UtcNow:yyyyMMddHHmmss}";
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
         public decimal TotalAmount { get; set; }
+        public string PaymentMethod { get; set; } = PaymentMethods.VNPay;
+        public string PaymentStatus { get; set; } = PaymentStatuses.Unpaid;
+        public string SettlementStatus { get; set; } = SettlementStatuses.NotReady;
         public string Status { get; set; } = OrderStatuses.PendingPayment;
 
         public string ShippingAddress { get; set; } = string.Empty;
@@ -23,6 +26,7 @@ namespace GreenMarket.API.Models
         public DateTime? ConfirmedAt { get; set; }
         public DateTime? ShippedAt { get; set; }
         public DateTime? DeliveredAt { get; set; }
+        public DateTime? PaidAt { get; set; }
         public DateTime? CompletedAt { get; set; }
         public DateTime? CancelledAt { get; set; }
 

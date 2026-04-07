@@ -220,6 +220,7 @@ namespace GreenMarket.API.Services
             builder.AppendLine($"Trạng thái hiện tại: {TranslateStatus(order.Status)}.");
             builder.AppendLine($"Ngày tạo: {order.OrderDate:dd/MM/yyyy HH:mm}.");
             builder.AppendLine($"Tổng tiền: {order.TotalAmount:N0}đ.");
+            builder.AppendLine($"Phương thức thanh toán: {(string.Equals(order.PaymentMethod, PaymentMethods.CashOnDelivery, StringComparison.OrdinalIgnoreCase) ? "Thanh toán khi nhận hàng (COD)" : "Thanh toán online qua VNPay")}.");
             if (!string.IsNullOrWhiteSpace(order.ShippingAddress))
             {
                 builder.AppendLine($"Địa chỉ giao: {order.ShippingAddress}.");

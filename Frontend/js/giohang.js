@@ -98,8 +98,27 @@ document.addEventListener('DOMContentLoaded', async () => {
           <label class="mb-2 block text-sm font-semibold text-slate-700">Ghi chú cho đơn hàng</label>
           <textarea id="checkout-note" rows="2" class="w-full rounded-xl border border-primary/15 bg-background-light px-4 py-3 focus:border-primary focus:ring-primary" placeholder="Ví dụ: giao giờ hành chính, gọi trước khi giao..."></textarea>
         </div>
+        <div>
+          <label class="mb-2 block text-sm font-semibold text-slate-700">Phương thức thanh toán</label>
+          <div class="grid gap-3 sm:grid-cols-2">
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-primary/15 bg-background-light px-4 py-3">
+              <input type="radio" name="checkout-payment-method" value="VNPay" class="mt-1 text-primary focus:ring-primary" checked />
+              <span>
+                <span class="block font-bold text-forest">Thanh toán online</span>
+                <span class="mt-1 block text-sm text-slate-500">Tạo đơn xong sẽ mở cổng VNPay.</span>
+              </span>
+            </label>
+            <label class="flex cursor-pointer items-start gap-3 rounded-xl border border-primary/15 bg-background-light px-4 py-3">
+              <input type="radio" name="checkout-payment-method" value="COD" class="mt-1 text-primary focus:ring-primary" />
+              <span>
+                <span class="block font-bold text-forest">Thanh toán khi nhận hàng</span>
+                <span class="mt-1 block text-sm text-slate-500">Đơn chuyển thẳng sang chờ shop xác nhận; shipper sẽ thu tiền khi giao thành công.</span>
+              </span>
+            </label>
+          </div>
+        </div>
         <div class="rounded-xl bg-earth-beige/40 px-4 py-3 text-sm text-slate-600">
-          Sau khi tạo đơn, hệ thống sẽ lấy link thanh toán VNPay từ backend. Nếu chưa cấu hình VNPay, bạn vẫn tạo được đơn và kiểm tra trạng thái trong trang tài khoản.
+          Nếu chọn VNPay, hệ thống sẽ lấy link thanh toán từ backend sau khi tạo đơn. Nếu chọn COD, shipper sẽ thu tiền khi giao thành công và đơn chỉ hoàn tất sau khi bạn xác nhận đã nhận hàng.
         </div>
       </form>
     `;
@@ -230,7 +249,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       checkoutButton.className = `w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-colors ${
         items.length ? 'bg-primary text-white hover:bg-forest' : 'bg-gray-300 text-white cursor-not-allowed'
       }`;
-      checkoutButton.textContent = items.length ? 'Tạo đơn & lấy link thanh toán' : 'Chưa thể thanh toán';
+      checkoutButton.textContent = items.length ? 'Xác nhận đặt hàng' : 'Chưa thể thanh toán';
       checkoutButton.onclick = async () => {
         if (!items.length) return;
         const form = document.getElementById('checkout-form');
@@ -238,6 +257,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const contactPhone = document.getElementById('checkout-contact-phone')?.value.trim() || '';
         const shippingAddress = document.getElementById('checkout-address')?.value.trim() || '';
         const note = document.getElementById('checkout-note')?.value.trim() || '';
+        const paymentMethod = document.querySelector('input[name="checkout-payment-method"]:checked')?.value || 'VNPay';
 
         if (!contactName || !contactPhone || !shippingAddress) {
           app.notify('Vui lòng nhập đầy đủ thông tin giao hàng.', 'warning');
@@ -252,22 +272,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         try {
           const order = await app.request('/api/orders/checkout', {
             method: 'POST',
-            body: { contactName, contactPhone, shippingAddress, note },
+            body: { contactName, contactPhone, shippingAddress, note, paymentMethod },
           });
 
-          let paymentUrl = '';
-          try {
-            const payment = await app.request(`/api/orders/${order.id}/pay-url`, {
-              method: 'POST',
-            });
-            paymentUrl = payment.paymentUrl || '';
-          } catch (paymentError) {
-            app.notify(`Đã tạo đơn ${order.orderCode || `#${order.id}`}, nhưng chưa lấy được link thanh toán: ${paymentError.message}`, 'warning');
-          }
+          if (paymentMethod === 'VNPay') {
+            let paymentUrl = '';
+            try {
+              const payment = await app.request(`/api/orders/${order.id}/pay-url`, {
+                method: 'POST',
+              });
+              paymentUrl = payment.paymentUrl || '';
+            } catch (paymentError) {
+              app.notify(`Đã tạo đơn ${order.orderCode || `#${order.id}`}, nhưng chưa lấy được link thanh toán: ${paymentError.message}`, 'warning');
+            }
 
-          if (paymentUrl) {
-            app.notify(`Đã tạo đơn ${order.orderCode || `#${order.id}`}. Đang mở cổng thanh toán...`, 'success');
-            window.open(paymentUrl, '_blank', 'noopener');
+            if (paymentUrl) {
+              app.notify(`Đã tạo đơn ${order.orderCode || `#${order.id}`}. Đang mở cổng thanh toán...`, 'success');
+              window.open(paymentUrl, '_blank', 'noopener');
+            }
+          } else {
+            app.notify(`Đã tạo đơn COD ${order.orderCode || `#${order.id}`}. Shop sẽ xác nhận đơn, shipper thu tiền khi giao thành công.`, 'success');
           }
 
           window.location.href = app.buildPageUrl('taikhoan-donhang.html', {

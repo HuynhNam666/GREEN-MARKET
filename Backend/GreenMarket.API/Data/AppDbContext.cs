@@ -115,6 +115,9 @@ namespace GreenMarket.API.Data
             modelBuilder.Entity<Product>().Property(x => x.Price).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<CartItem>().Property(x => x.Price).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Order>().Property(x => x.TotalAmount).HasColumnType("decimal(18,2)");
+            modelBuilder.Entity<Order>().Property(x => x.PaymentMethod).HasMaxLength(20).HasDefaultValue(PaymentMethods.VNPay);
+            modelBuilder.Entity<Order>().Property(x => x.PaymentStatus).HasMaxLength(20).HasDefaultValue(PaymentStatuses.Unpaid);
+            modelBuilder.Entity<Order>().Property(x => x.SettlementStatus).HasMaxLength(20).HasDefaultValue(SettlementStatuses.NotReady);
             modelBuilder.Entity<OrderDetail>().Property(x => x.Price).HasColumnType("decimal(18,2)");
         }
     }

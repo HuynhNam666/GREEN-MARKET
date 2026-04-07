@@ -462,14 +462,14 @@
       const currentRole = ctx.currentUser.role;
 
       if (currentRole === 'User') {
-        if (status === 'PendingPayment' || status === 'PaymentFailed') {
+        if ((status === 'PendingPayment' || status === 'PaymentFailed') && order.paymentMethod !== 'COD') {
           actions.push('<button data-action="pay-order" data-order-id="' + order.id + '" class="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-forest transition-colors">Thanh toán lại</button>');
         }
         if (['PendingPayment', 'AwaitingConfirmation', 'Processing', 'ReadyToShip', 'FailedDelivery'].includes(status)) {
           actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="Cancelled" class="rounded-xl border border-rose-200 px-4 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors">Hủy đơn</button>');
         }
         if (status === 'Delivered') {
-          actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="Completed" class="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 transition-colors">Xác nhận hoàn tất</button>');
+          actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="Completed" class="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 transition-colors">Xác nhận đã nhận hàng</button>');
           actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="ReturnRequested" class="rounded-xl border border-orange-200 px-4 py-3 text-sm font-bold text-orange-600 hover:bg-orange-50 transition-colors">Yêu cầu trả hàng</button>');
         }
         if (status === 'Shipping') {
@@ -492,9 +492,15 @@
         }
       }
 
-      if (currentRole === 'Shipper' && status === 'Shipping') {
-        actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="Delivered" class="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 transition-colors">Đã giao thành công</button>');
-        actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="FailedDelivery" class="rounded-xl border border-rose-200 px-4 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors">Giao thất bại</button>');
+      if (currentRole === 'Shipper') {
+        if (status === 'ReadyToShip') {
+          actions.push('<button data-action="accept-delivery" data-order-id="' + order.id + '" class="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white hover:bg-forest transition-colors">Nhận giao đơn</button>');
+        }
+        if (status === 'Shipping') {
+          const deliveredLabel = order.paymentMethod === 'COD' ? 'Đã giao & thu tiền' : 'Đã giao thành công';
+          actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="Delivered" class="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-bold text-white hover:bg-emerald-700 transition-colors">' + deliveredLabel + '</button>');
+          actions.push('<button data-action="update-status" data-order-id="' + order.id + '" data-status="FailedDelivery" class="rounded-xl border border-rose-200 px-4 py-3 text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors">Giao thất bại</button>');
+        }
       }
 
       if (currentRole === 'Admin') {
@@ -538,6 +544,7 @@
               <div class="flex flex-wrap items-center gap-3">
                 <h3 class="text-2xl font-bold text-forest">${app.escapeHtml(order.orderCode || `Đơn #${order.id}`)}</h3>
                 <span class="rounded-full px-4 py-2 text-sm font-bold ${orderToneMap[order.status] || 'bg-slate-100 text-slate-700'}">${app.escapeHtml(order.statusLabel || orderLabelMap[order.status] || order.status)}</span>
+                ${order.paymentMethodLabel ? `<span class="gm-order-chip">${app.escapeHtml(order.paymentMethodLabel)}</span>` : ''}
                 ${order.reservationState?.isHoldingStock ? '<span class="gm-order-chip">Giữ hàng</span>' : ''}
               </div>
               <div class="grid gap-4 text-sm text-slate-600 sm:grid-cols-2 xl:grid-cols-4">
@@ -560,6 +567,9 @@
               </div>
               <div class="rounded-2xl bg-background-light p-4 text-sm text-slate-600">
                 <p><span class="font-bold text-forest">Địa chỉ giao hàng:</span> ${app.escapeHtml(order.shippingAddress || '—')}</p>
+                ${order.paymentMethodLabel ? `<p class="mt-2"><span class="font-bold text-forest">Phương thức thanh toán:</span> ${app.escapeHtml(order.paymentMethodLabel)}</p>` : ''}
+                ${order.paymentStatusLabel ? `<p class="mt-2"><span class="font-bold text-forest">Trạng thái thanh toán:</span> ${app.escapeHtml(order.paymentStatusLabel)}${order.paidAt ? ` • ${app.formatDate(order.paidAt)}` : ''}</p>` : ''}
+                ${order.settlementStatusLabel ? `<p class="mt-2"><span class="font-bold text-forest">Giải ngân cho shop:</span> ${app.escapeHtml(order.settlementStatusLabel)}</p>` : ''}
                 ${order.note ? `<p class="mt-2"><span class="font-bold text-forest">Ghi chú:</span> ${app.escapeHtml(order.note)}</p>` : ''}
                 ${order.assignedShipper ? `<p class="mt-2"><span class="font-bold text-forest">Shipper:</span> ${app.escapeHtml(order.assignedShipper.username)} (${app.escapeHtml(order.assignedShipper.email)})</p>` : ''}
               </div>
